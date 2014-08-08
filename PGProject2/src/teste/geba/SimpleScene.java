@@ -15,7 +15,7 @@ public class SimpleScene implements GLEventListener {
     private double theta = 0;
     private double s = 0;
     private double c = 0;
-
+//oi
     public static void main(String[] args) {
         GLProfile glp = GLProfile.getDefault();
         GLCapabilities caps = new GLCapabilities(glp);
