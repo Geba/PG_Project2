@@ -65,9 +65,7 @@ public class SimpleScene implements GLEventListener {
 
     private void render(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
-
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-
         // draw a triangle filling the window
         gl.glBegin(GL.GL_TRIANGLES);
         gl.glColor3f(1, 0, 0);
