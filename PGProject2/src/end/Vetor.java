@@ -62,4 +62,23 @@ public class Vetor {
 		}
 		return out;
 	}
+	
+	public double getNorma() {
+		double k = 0;
+		for (int i = 0; i < this.size; i++) {
+			k = k + this.coor[i] * this.coor[i];
+		}
+		k = Math.sqrt(k);
+		return k;
+	}
+
+	public void normalize() {
+		double k = 0;
+		k = getNorma();
+		for (int i = 0; i < this.size; i++) {
+			this.coor[i] = this.coor[i] / k;
+		}
+	}
+	
+	
 }
