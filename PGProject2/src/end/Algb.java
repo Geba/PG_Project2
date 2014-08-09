@@ -56,4 +56,8 @@ public class Algb {
     	return proj;    	
     }
 	
+	public double[][] multMatrizVetor (){
+		
+	}
+	
 }

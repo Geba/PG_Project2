@@ -26,7 +26,8 @@ public class Main {
     static double hx; //coloquei double p não ter surpresa
 	static double hy; //coloquei double p não ter surpresa
     
-    //camera
+    //auxiliares
+	static Vetor pmenosc = new Vetor(3); //[P - C] que vai multiplicar pela matriz I (Parte 3)
     
 	static void lerObjetos(){
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
@@ -106,25 +107,38 @@ public class Main {
 		System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
     }
      
+	
     
     public static void main(String[] args) {
     	lerCamera();
     	printCamera();
     	System.out.println();
-    	System.out.println(Vetor.printVetor(3, Algb.projec(V, N)));
+ 	
+    	
+    	//Parte 3 - Mudança de coor - Mundiais -> Câmera 
+    	//é preciso fazer a inversa dessa matriz para que ela possa ser  
+    	//utilizada para a mudança de coor como requer a terceira parte.
     	V1 = Algb.sub(V, Algb.projec(V, N));
-    	System.out.println(Vetor.printVetor(V1.size, V1) + "\n");
     	U = Algb.prodVetorial(N, V);
-    	System.out.println(Vetor.printVetor(U.size, U) + "\n");
     	Vetor.normaliza(U);
     	Vetor.normaliza(V);
     	Vetor.normaliza(N);
-    	System.out.println(Vetor.printVetor(3, U));
-    	System.out.println(Vetor.printVetor(3, V1));
-    	System.out.println(Vetor.printVetor(3, N));
     	
+    	Vetor P = new Vetor(3);
     	
+    	for (int k = 0; k < 3; k++) {
+    		pmenosc.coor[k] = P.coor[k] - C.coor[k]; 
+    	}
     	
+    	double [][] I = new double[V.size][V.size];
+		for (int i = 0; i < V.size; i++) {
+			I[i][0] = U.coor[i];
+			I[i][1] = V.coor[i];
+			I[i][2] = N.coor[i];    	
+		}
+		
+		
+		
     	
     	//PARA QUANDO ESTIVERMOS LENDO O ARQUIVO
     	/*
@@ -132,16 +146,6 @@ public class Main {
 		printAtributos();
     	lerObjetos();
     	printObjetos();
-		
-		Vetor.normaliza(V);
-		Vetor.normaliza(N);
-		
-    	
-		
-		
-		//Parte 3 - Mudança de coor - Mundiais -> Câmera 
-		//é preciso fazer a inversa dessa matriz para que ela possa ser utilizada para a 
-		//mudança de coor como requer a terceira parte.
 		
 		double [][] matrizRotInv = new double[V.size][V.size];
 		for (int i = 0; i < V.size; i++) {
