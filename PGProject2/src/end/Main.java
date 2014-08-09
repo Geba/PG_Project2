@@ -2,8 +2,8 @@ package end;
 //oi
 public class Main {
 	//objetos
-	static int Np;
-	static int Nt;
+	static int Np;//Numero de Pontos
+	static int Nt;//Numero de triangulos
 	static double[][] pontos;
 	static double[][] triangulos;
 	//atributos
@@ -119,9 +119,11 @@ public class Main {
     	//� preciso fazer a inversa dessa matriz para que ela possa ser  
     	//utilizada para a mudan�a de coor como requer a terceira parte.
     	V1 = Algb.sub(V, Algb.projec(V, N));
+    	
     	U = Algb.prodVetorial(N, V);
+    	
     	Vetor.normaliza(U);
-    	Vetor.normaliza(V);
+    	Vetor.normaliza(V1);
     	Vetor.normaliza(N);
     	
     	Vetor P = new Vetor(3);
@@ -130,14 +132,14 @@ public class Main {
     		pmenosc.coor[k] = P.coor[k] - C.coor[k]; 
     	}
     	
-    	double [][] I = new double[V.size][V.size];
+    	double [][] I = new double[3][3];
 		for (int i = 0; i < V.size; i++) {
 			I[i][0] = U.coor[i];
 			I[i][1] = V.coor[i];
 			I[i][2] = N.coor[i];    	
 		}
-		
-		
+		Vetor aus= Algb.sub(P, C);
+		Algb.multMatrizVetor(I, aus);
 		
     	
     	//PARA QUANDO ESTIVERMOS LENDO O ARQUIVO
