@@ -1,5 +1,5 @@
 package end;
-
+//oi
 public class Main {
 	//objetos
 	static int Np;
@@ -23,8 +23,8 @@ public class Main {
 	static Vetor U = new Vetor(3);
 	static Vetor V1 = new Vetor(3);
 	static double d;
-    static double hx; //coloquei double p não ter surpresa
-	static double hy; //coloquei double p não ter surpresa
+    static double hx; //coloquei double p nï¿½o ter surpresa
+	static double hy; //coloquei double p nï¿½o ter surpresa
     
     //auxiliares
 	static Vetor pmenosc = new Vetor(3); //[P - C] que vai multiplicar pela matriz I (Parte 3)
@@ -115,9 +115,9 @@ public class Main {
     	System.out.println();
  	
     	
-    	//Parte 3 - Mudança de coor - Mundiais -> Câmera 
-    	//é preciso fazer a inversa dessa matriz para que ela possa ser  
-    	//utilizada para a mudança de coor como requer a terceira parte.
+    	//Parte 3 - Mudanï¿½a de coor - Mundiais -> Cï¿½mera 
+    	//ï¿½ preciso fazer a inversa dessa matriz para que ela possa ser  
+    	//utilizada para a mudanï¿½a de coor como requer a terceira parte.
     	V1 = Algb.sub(V, Algb.projec(V, N));
     	U = Algb.prodVetorial(N, V);
     	Vetor.normaliza(U);
