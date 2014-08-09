@@ -16,6 +16,7 @@ public class Main {
 	static Vetor N;
 	static Vetor V;
 	static Vetor U;
+	static Vetor V1;
 	static double d;
     static int hx;
 	static int hy;
@@ -45,9 +46,9 @@ public class Main {
     
     static void lerCamera(){
     	arquivo = new Arquivo("camera.txt","lixo.txt");
-    	C.coordenadas[0] = arquivo.readInt(); C.coordenadas[1] = arquivo.readInt();C.coordenadas[2] = arquivo.readInt();
-    	N.coordenadas[0] = arquivo.readInt(); N.coordenadas[1] = arquivo.readInt();N.coordenadas[1] = arquivo.readInt();
-    	V.coordenadas[0] = arquivo.readInt(); V.coordenadas[1] = arquivo.readInt(); V.coordenadas[2] = arquivo.readInt();
+    	C.coor[0] = arquivo.readInt(); C.coor[1] = arquivo.readInt();C.coor[2] = arquivo.readInt();
+    	N.coor[0] = arquivo.readInt(); N.coor[1] = arquivo.readInt();N.coor[1] = arquivo.readInt();
+    	V.coor[0] = arquivo.readInt(); V.coor[1] = arquivo.readInt(); V.coor[2] = arquivo.readInt();
     	d = arquivo.readDouble();
     	hx = arquivo.readInt();hy = arquivo.readInt();
     }
@@ -56,32 +57,12 @@ public class Main {
     static void printCamera(){
     	
     }
+     
     
-    Vetor projec(Vetor u, Vetor v){
-		Vetor proj = new Vetor(u.size);
-		double a=0,b=0,k;
-		double size = u.getSize();
-		//a = <v*u> |  b = <u*u>
-		for(int i =0; i<size;i++){
-		    a = a + u.coordenadas[i] * v.coordenadas[i];
-		    b = b + v.coordenadas[i]* v.coordenadas[i];
-		    proj.coordenadas[i] = v.coordenadas[i];
-		}
-		
-		k = a/b;
-		
-		// proj.coordenadas = v | k*proj.coordenadas = k*v
-		for (int i=0; i<size; i++){
-			proj.coordenadas[i] = k*proj.coordenadas[i];
-		}
-		
-    	return proj;    	
-    }
-    
-  
     public static void main(String[] args) {
-	
-		lerAtributos();
+    	//PARA QUANDO ESTIVERMOS LENDO O ARQUIVO
+    	/*
+    	lerAtributos();
 		printAtributos();
 		lerCamera();
 		printCamera();
@@ -89,17 +70,32 @@ public class Main {
 		Vetor.normaliza(V);
 		Vetor.normaliza(N);
 		
-		//U = Algb.prodVetorial(V, U);
-				
-		//Parte 3 - Mudança de coordenadas - Mundiais -> Câmera 
+		V1 = Algb.sub(V, Algb.projec(V, N));
+    	
+		U = Algb.prodVetorial(V, U);
+		
+		
+		//Parte 3 - Mudança de coor - Mundiais -> Câmera 
 		//é preciso fazer a inversa dessa matriz para que ela possa ser utilizada para a 
-		//mudança de coordenadas como requer a terceira parte.
+		//mudança de coor como requer a terceira parte.
 		
 		double [][] matrizRotInv = new double[V.size][V.size];
 		for (int i = 0; i < V.size; i++) {
-			matrizRotInv[i][0] = U.coordenadas[i];
-			matrizRotInv[i][1] = V.coordenadas[i];
-			matrizRotInv[i][2] = N.coordenadas[i];
+			matrizRotInv[i][0] = U.coor[i];
+			matrizRotInv[i][1] = V.coor[i];
+			matrizRotInv[i][2] = N.coor[i];    	
 		}
+			
+			*/
+    	
+    	Vetor A = new Vetor(1, 2, 3);
+    	Vetor B = new Vetor(4, 2, 1);
+    	//
+    	//Vetor C = Algb.prodEscalar(A, B);
+    	//C.coor[0] + " " + C.coor[1] + " " + C.coor[2]
+    	System.out.println(Algb.prodEscalar(A, B));
+    	
+    	
+  
     }
 }

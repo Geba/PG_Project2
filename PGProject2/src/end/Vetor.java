@@ -3,13 +3,20 @@ package end;
 	
 public class Vetor {
 	public int size;
-	public double[] coordenadas; //coordenadas do vetor
+	public double[] coor; //coor do vetor
 	
 	public Vetor(int size){
 		this.size = size;
-		coordenadas = new double[size];
+		coor = new double[size];
 	}	
 	
+	public Vetor(double i, double j, double k) {
+		coor = new double[3];
+		coor[0] =i;
+		coor[1] =j;
+		coor[2] =k;
+	}
+
 	public int getSize(){
 		return size;
 	}
@@ -17,7 +24,7 @@ public class Vetor {
 	public static double getNorma(Vetor v) {
 		double k = 0;
 		for(int i = 0; i< v.size; i++){
-		    k = k + v.coordenadas[i]* v.coordenadas[i];
+		    k = k + v.coor[i]* v.coor[i];
     	}
     	k = Math.sqrt(k);
     	 
@@ -30,7 +37,7 @@ public class Vetor {
     	k = getNorma(v);
     	
     	for(int i = 0; i< v.size; i++){
-    		v.coordenadas[i] = v.coordenadas[i]/k;
+    		v.coor[i] = v.coor[i]/k;
     	}
     	
     	return v;
