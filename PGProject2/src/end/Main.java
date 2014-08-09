@@ -8,13 +8,14 @@ public class Main {
     static double Kd;
 	static double Ks;
     static double  h;
-    static double Il[] = new double[3];
-    static double Pl[] = new double [3];
+    static double[] Il = new double[3];
+    static double[] Pl = new double [3];
     static Arquivo arquivo;
     //camera
-    static double[] C;
-	static double[] N;
-	static double[] V;
+    static Vetor C;
+	static Vetor N;
+	static Vetor V;
+	static Vetor U;
 	static double d;
     static int hx;
 	static int hy;
@@ -44,9 +45,9 @@ public class Main {
     
     static void lerCamera(){
     	arquivo = new Arquivo("camera.txt","lixo.txt");
-    	C[0] = arquivo.readInt(); C[1] = arquivo.readInt();C[2] = arquivo.readInt();
-    	N[0] = arquivo.readInt(); N[1] = arquivo.readInt();N[1] = arquivo.readInt();
-    	V[0] = arquivo.readInt(); V[1] = arquivo.readInt(); V[2] = arquivo.readInt();
+    	C.coordenadas[0] = arquivo.readInt(); C.coordenadas[1] = arquivo.readInt();C.coordenadas[2] = arquivo.readInt();
+    	N.coordenadas[0] = arquivo.readInt(); N.coordenadas[1] = arquivo.readInt();N.coordenadas[1] = arquivo.readInt();
+    	V.coordenadas[0] = arquivo.readInt(); V.coordenadas[1] = arquivo.readInt(); V.coordenadas[2] = arquivo.readInt();
     	d = arquivo.readDouble();
     	hx = arquivo.readInt();hy = arquivo.readInt();
     }
@@ -59,15 +60,17 @@ public class Main {
     Vetor projec(Vetor u, Vetor v){
 		Vetor proj = new Vetor(u.size);
 		double a=0,b=0,k;
-		double size = u.getSize();;
+		double size = u.getSize();
+		//a = <v*u> |  b = <u*u>
 		for(int i =0; i<size;i++){
-		    a = a+ u.coordenadas[i] * v.coordenadas[i];
-		    b = b+v.coordenadas[i]*v.coordenadas[i];
+		    a = a + u.coordenadas[i] * v.coordenadas[i];
+		    b = b + v.coordenadas[i]* v.coordenadas[i];
 		    proj.coordenadas[i] = v.coordenadas[i];
 		}
-    	
-		k = a/b; //fra��o que a multiplica o vetor cujo resultado � a proje��o de u sobre v
 		
+		k = a/b;
+		
+		// proj.coordenadas = v | k*proj.coordenadas = k*v
 		for (int i=0; i<size; i++){
 			proj.coordenadas[i] = k*proj.coordenadas[i];
 		}
@@ -75,11 +78,19 @@ public class Main {
     	return proj;    	
     }
     
-	public static void main(String[] args) {
+  
+    public static void main(String[] args) {
+	
 		lerAtributos();
 		printAtributos();
 		lerCamera();
 		printCamera();
+		
+		Vetor.normaliza(V);
+		Vetor.normaliza(N);
+		
+		U = Algeb.prodEscalar(V, U);
+		
 	}
 
 }
