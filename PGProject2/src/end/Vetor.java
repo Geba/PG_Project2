@@ -1,3 +1,5 @@
+
+
 package end;
 
 	
@@ -19,6 +21,7 @@ public class Vetor {
 		coor[0] =i;
 		coor[1] =j;
 		coor[2] =k;
+		size = 3;
 	}
 	
 	public int getSize(){
@@ -62,7 +65,18 @@ public class Vetor {
 		}
 		return out;
 	}
-	
+	public String toString(){
+		String out = "";
+		for (int i = 0; i < this.size; i++) {
+			if(i == size - 1){
+				out = out +this.coor[i]+"";	
+			} else {
+				out = out+ this.coor[i] + " " ;
+			}
+		}
+		return out;
+		
+	}
 	public double getNorma() {
 		double k = 0;
 		for (int i = 0; i < this.size; i++) {
@@ -82,3 +96,16 @@ public class Vetor {
 	
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
