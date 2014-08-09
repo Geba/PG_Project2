@@ -7,7 +7,7 @@ package end;
  *
  */
 import java.io.*;
-
+//
 /**
  * Classe que manipula a entrada e sa�da de dados de um programa atrav�s de
  * arquivos.<br> <br>
