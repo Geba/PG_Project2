@@ -1,5 +1,5 @@
 package teste.geba;
-
+//
 import end.Vetor;
 
 public class Algb {
