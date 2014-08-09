@@ -1,6 +1,11 @@
 package end;
 
 public class Main {
+	//objetos
+	static int Np;
+	static int Nt;
+	static double[][] pontos;
+	static double[][] triangulos;
 	//atributos
 	static int[] Ia = new int [3];
 	static double Ka;
@@ -10,7 +15,7 @@ public class Main {
     static double  h;
     static double[] Il = new double[3];
     static double[] Pl = new double [3];
-    static Arquivo arquivo;
+    static Arquivo arq;
     //camera
     static Vetor C;
 	static Vetor N;
@@ -18,11 +23,48 @@ public class Main {
 	static Vetor U;
 	static Vetor V1;
 	static double d;
-    static int hx;
-	static int hy;
+    static double hx; //coloquei double p não ter surpresa
+	static double hy; //coloquei double p não ter surpresa
     
     //camera
     
+	static void LerObjeto(){
+		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
+		Np = arq.readInt();
+		Nt = arq.readInt();
+		
+		pontos = new double[Np][3];
+		triangulos = new double[Nt][3]; 
+		
+		for (int i = 0; i < Np; i++) {
+			for (int j = 0; j < 3; j++) {
+				pontos[i][j] = arq.readDouble();
+			}
+		}
+		
+		for (int i = 0; i < Nt; i++) {
+			for (int j = 0; j < 3; j++) {
+				triangulos[i][j] = arq.readDouble();
+			}
+		}
+	}
+	
+	static void printObjetos(){
+		System.out.println("Np: " + Np + "Nt: " + Np);
+		
+		for (int i = 0; i < Np; i++) {
+			for (int j = 0; j < 3; j++) {
+				System.out.println(pontos[i][j]);
+			}
+		}
+		
+		for (int i = 0; i < Nt; i++) {
+			for (int j = 0; j < 3; j++) {
+				System.out.println(triangulos[i][j]);
+			}
+		}
+	}
+	
     static void printAtributos() {
     	System.out.println("Ia: "+Ia[0]+" "+Ia[1]+" "+Ia[2]);
     	System.out.println("Ka: "+Ka);
@@ -35,27 +77,30 @@ public class Main {
 	}
     
     static void lerAtributos(){
-    	arquivo  = new Arquivo("atributo.txt","lixo.txt");
-    	Ia[0] = arquivo.readInt();Ia[1] = arquivo.readInt();Ia[2] = arquivo.readInt();
-    	Od[0] = arquivo.readInt();Od[1] = arquivo.readInt();Od[2] = arquivo.readInt();
-    	Kd = arquivo.readInt();Ks= arquivo.readInt();h = arquivo.readInt();
-    	Il[0] = arquivo.readDouble();Il[1] = arquivo.readDouble();Il[2] = arquivo.readDouble();
-    	Pl[0] = arquivo.readDouble();Pl[1] = arquivo.readDouble();Pl[2] = arquivo.readDouble();
+    	arq  = new Arquivo("atributo.txt","lixoAtr.txt");
+    	Ia[0] = arq.readInt();Ia[1] = arq.readInt();Ia[2] = arq.readInt();
+    	Od[0] = arq.readInt();Od[1] = arq.readInt();Od[2] = arq.readInt();
+    	Kd = arq.readInt();Ks= arq.readInt();h = arq.readInt();
+    	Il[0] = arq.readDouble();Il[1] = arq.readDouble();Il[2] = arq.readDouble();
+    	Pl[0] = arq.readDouble();Pl[1] = arq.readDouble();Pl[2] = arq.readDouble();
     	
     }
     
     static void lerCamera(){
-    	arquivo = new Arquivo("camera.txt","lixo.txt");
-    	C.coor[0] = arquivo.readInt(); C.coor[1] = arquivo.readInt();C.coor[2] = arquivo.readInt();
-    	N.coor[0] = arquivo.readInt(); N.coor[1] = arquivo.readInt();N.coor[1] = arquivo.readInt();
-    	V.coor[0] = arquivo.readInt(); V.coor[1] = arquivo.readInt(); V.coor[2] = arquivo.readInt();
-    	d = arquivo.readDouble();
-    	hx = arquivo.readInt();hy = arquivo.readInt();
+    	arq = new Arquivo("camera.txt","lixoCam.txt");
+    	C.coor[0] = arq.readInt(); C.coor[1] = arq.readInt();C.coor[2] = arq.readInt();
+    	N.coor[0] = arq.readInt(); N.coor[1] = arq.readInt();N.coor[1] = arq.readInt();
+    	V.coor[0] = arq.readInt(); V.coor[1] = arq.readInt(); V.coor[2] = arq.readInt();
+    	d = arq.readDouble();
+    	hx = arq.readInt();hy = arq.readInt();
     }
     
     
     static void printCamera(){
-    	
+    	System.out.println("C: " + C.coor[0] + " " +C.coor[1] + " " + C.coor[2]); 
+		System.out.println("N: " + N.coor[0] + " " +N.coor[1] + " " + N.coor[2]);
+		System.out.println("V: " + V.coor[0] + " " + V.coor[1] + " " + V.coor[2]);
+		System.out.println("d: " + d + "hx: " + hx + "hy: " + hy);
     }
      
     
