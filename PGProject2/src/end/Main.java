@@ -110,8 +110,6 @@ public class Main {
 	
     
     public static void main(String[] args) {
-    	
-    	//fazendo um comentario no main
     	lerCamera();
     	printCamera();
     	System.out.println();

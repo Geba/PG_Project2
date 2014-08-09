@@ -56,8 +56,27 @@ public class Algb {
     	return proj;    	
     }
 	
-	public double[][] multMatrizVetor (){
-		
+	public double[][] multMatrizVetor (double[][] M, Vetor V){
+		int i, j;
+		double[][] result = new double[M.length][V.size];
+		double aux = 0;
+		for (i = 0; i < M.length; i++) {
+			for (j = 0; j < V.size; j++) {
+				 aux = aux + M[i][j] + V.coor[j];
+			}
+			result[i][j] = aux; 
+			aux = 0;
+		}
+		return result;
 	}
 	
 }
+
+
+
+
+
+
+
+
+
