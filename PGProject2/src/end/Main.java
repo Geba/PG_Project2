@@ -12,23 +12,23 @@ public class Main {
 	static int Od[] = new int [3];
     static double Kd;
 	static double Ks;
-    static double  h;
+    static double  n;
     static double[] Il = new double[3];
     static double[] Pl = new double [3];
     static Arquivo arq;
     //camera
-    static Vetor C;
-	static Vetor N;
-	static Vetor V;
-	static Vetor U;
-	static Vetor V1;
+    static Vetor C = new Vetor(3);
+	static Vetor N = new Vetor(3);
+	static Vetor V = new Vetor(3);
+	static Vetor U = new Vetor(3);
+	static Vetor V1 = new Vetor(3);
 	static double d;
     static double hx; //coloquei double p não ter surpresa
 	static double hy; //coloquei double p não ter surpresa
     
     //camera
     
-	static void LerObjeto(){
+	static void lerObjetos(){
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
 		Np = arq.readInt();
 		Nt = arq.readInt();
@@ -50,17 +50,17 @@ public class Main {
 	}
 	
 	static void printObjetos(){
-		System.out.println("Np: " + Np + "Nt: " + Np);
+		System.out.println("Np: " + Np + " Nt: " + Np);
 		
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
-				System.out.println(pontos[i][j]);
+				System.out.print(pontos[i][j] + " ");
 			}
 		}
 		
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-				System.out.println(triangulos[i][j]);
+				System.out.println(triangulos[i][j] + " ");
 			}
 		}
 	}
@@ -71,7 +71,7 @@ public class Main {
     	System.out.println("Od: "+Od[0]+" "+Od[1]+" "+Od[2]);
     	System.out.println("Kd: "+Kd);
     	System.out.println("Ks: "+Ks);
-    	System.out.println("h: "+h);
+    	System.out.println("n: "+n);
     	System.out.println("Il :"+Il[0]+" "+Il[1]+" "+Il[2]);
     	System.out.println("Pl :"+Pl[0]+" "+Pl[1]+" "+Pl[2]);    	
 	}
@@ -79,8 +79,11 @@ public class Main {
     static void lerAtributos(){
     	arq  = new Arquivo("atributo.txt","lixoAtr.txt");
     	Ia[0] = arq.readInt();Ia[1] = arq.readInt();Ia[2] = arq.readInt();
+    	Ka = arq.readDouble();
     	Od[0] = arq.readInt();Od[1] = arq.readInt();Od[2] = arq.readInt();
-    	Kd = arq.readInt();Ks= arq.readInt();h = arq.readInt();
+    	Kd = arq.readInt();
+    	Ks= arq.readInt();
+    	n = arq.readInt();
     	Il[0] = arq.readDouble();Il[1] = arq.readDouble();Il[2] = arq.readDouble();
     	Pl[0] = arq.readDouble();Pl[1] = arq.readDouble();Pl[2] = arq.readDouble();
     	
@@ -88,11 +91,11 @@ public class Main {
     
     static void lerCamera(){
     	arq = new Arquivo("camera.txt","lixoCam.txt");
-    	C.coor[0] = arq.readInt(); C.coor[1] = arq.readInt();C.coor[2] = arq.readInt();
-    	N.coor[0] = arq.readInt(); N.coor[1] = arq.readInt();N.coor[1] = arq.readInt();
-    	V.coor[0] = arq.readInt(); V.coor[1] = arq.readInt(); V.coor[2] = arq.readInt();
+    	C.coor[0] = arq.readDouble(); C.coor[1] = arq.readDouble(); C.coor[2] = arq.readDouble();
+    	N.coor[0] = arq.readDouble(); N.coor[1] = arq.readDouble();N.coor[2] = arq.readDouble();
+    	V.coor[0] = arq.readDouble(); V.coor[1] = arq.readDouble(); V.coor[2] = arq.readDouble();
     	d = arq.readDouble();
-    	hx = arq.readInt();hy = arq.readInt();
+    	hx = arq.readDouble();hy = arq.readDouble();
     }
     
     
@@ -100,24 +103,40 @@ public class Main {
     	System.out.println("C: " + C.coor[0] + " " +C.coor[1] + " " + C.coor[2]); 
 		System.out.println("N: " + N.coor[0] + " " +N.coor[1] + " " + N.coor[2]);
 		System.out.println("V: " + V.coor[0] + " " + V.coor[1] + " " + V.coor[2]);
-		System.out.println("d: " + d + "hx: " + hx + "hy: " + hy);
+		System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
     }
      
     
     public static void main(String[] args) {
+    	lerCamera();
+    	printCamera();
+    	System.out.println();
+    	System.out.println(Vetor.printVetor(3, Algb.projec(V, N)));
+    	V1 = Algb.sub(V, Algb.projec(V, N));
+    	System.out.println(Vetor.printVetor(V1.size, V1) + "\n");
+    	U = Algb.prodVetorial(N, V);
+    	System.out.println(Vetor.printVetor(U.size, U) + "\n");
+    	Vetor.normaliza(U);
+    	Vetor.normaliza(V);
+    	Vetor.normaliza(N);
+    	System.out.println(Vetor.printVetor(3, U));
+    	System.out.println(Vetor.printVetor(3, V1));
+    	System.out.println(Vetor.printVetor(3, N));
+    	
+    	
+    	
+    	
     	//PARA QUANDO ESTIVERMOS LENDO O ARQUIVO
     	/*
     	lerAtributos();
 		printAtributos();
-		lerCamera();
-		printCamera();
+    	lerObjetos();
+    	printObjetos();
 		
 		Vetor.normaliza(V);
 		Vetor.normaliza(N);
 		
-		V1 = Algb.sub(V, Algb.projec(V, N));
     	
-		U = Algb.prodVetorial(V, U);
 		
 		
 		//Parte 3 - Mudança de coor - Mundiais -> Câmera 
@@ -133,12 +152,12 @@ public class Main {
 			
 			*/
     	
-    	Vetor A = new Vetor(1, 2, 3);
-    	Vetor B = new Vetor(4, 2, 1);
+    	//Vetor A = new Vetor(1, 2, 3);
+    	//Vetor B = new Vetor(4, 2, 1);
     	//
     	//Vetor C = Algb.prodEscalar(A, B);
     	//C.coor[0] + " " + C.coor[1] + " " + C.coor[2]
-    	System.out.println(Algb.prodEscalar(A, B));
+    	//System.out.println(Algb.prodEscalar(A, B));
     	
     	
   
