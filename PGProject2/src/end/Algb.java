@@ -27,5 +27,13 @@ public class Algb {
 		}
 		return resp;
 	}	
+	public static Vetor prodVetorial(Vetor a, Vetor b){
+		Vetor resp = new Vetor(3);
+		resp.coordenadas[0] = a.coordenadas[1]*b.coordenadas[2] - a.coordenadas[2]*b.coordenadas[1];
+		resp.coordenadas[1] = a.coordenadas[2]*b.coordenadas[0] - a.coordenadas[0]*b.coordenadas[2];
+		resp.coordenadas[2] = a.coordenadas[0]*b.coordenadas[1] - a.coordenadas[1]*b.coordenadas[0];
+		return resp;
+	}
+	
 	
 }
