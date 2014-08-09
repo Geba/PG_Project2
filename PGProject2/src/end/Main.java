@@ -89,8 +89,17 @@ public class Main {
 		Vetor.normaliza(V);
 		Vetor.normaliza(N);
 		
-		U = Algeb.prodEscalar(V, U);
+		//U = Algb.prodVetorial(V, U);
+				
+		//Parte 3 - Mudança de coordenadas - Mundiais -> Câmera 
+		//é preciso fazer a inversa dessa matriz para que ela possa ser utilizada para a 
+		//mudança de coordenadas como requer a terceira parte.
 		
-	}
-
+		double [][] matrizRotInv = new double[V.size][V.size];
+		for (int i = 0; i < V.size; i++) {
+			matrizRotInv[i][0] = U.coordenadas[i];
+			matrizRotInv[i][1] = V.coordenadas[i];
+			matrizRotInv[i][2] = N.coordenadas[i];
+		}
+    }
 }

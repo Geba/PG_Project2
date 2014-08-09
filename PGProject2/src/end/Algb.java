@@ -26,9 +26,6 @@ public class Algb {
 			resp+= a.coordenadas[i]*b.coordenadas[i];
 		}
 		return resp;
-	}
-	
-	
-	
+	}	
 	
 }
