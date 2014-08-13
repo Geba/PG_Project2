@@ -32,32 +32,26 @@ public class Main {
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
 		Np = arq.readInt();
 		Nt = arq.readInt();
-
 		pontos = new double[Np][3];
 		triangulos = new double[Nt][3]; 
-
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
 				pontos[i][j] = arq.readDouble();
 			}
 		}
-
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
 				triangulos[i][j] = arq.readDouble();
 			}
 		}
 	}
-
 	static void printObjetos(){
 		System.out.println("Np: " + Np + " Nt: " + Np);
-
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
 				System.out.print(pontos[i][j] + " ");
 			}
 		}
-
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
 				System.out.println(triangulos[i][j] + " ");

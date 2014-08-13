@@ -1,0 +1,10 @@
+Interface gráfica
+Ler atributos
+Ortogonalizar vetor da camera
+gerar U V e N e normalizar
+Mudar a bas de todos os pontos de triangulo
+gerar normais dos triangulos
+gerar normais dos vertices
+conversao por varredura: 
+	para cada pixel, (x, y_scan), calcular coordenadas baricentricas com relacao aos vertices projetados
+	multiplicar (x_scan, y_scan) pelo vertice do triangulo original
