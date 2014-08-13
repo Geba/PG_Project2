@@ -97,6 +97,26 @@ public class Algb {
 		}
 		return retorno;
 	}
+	//recebe a matriz de mudanca de base(MMB) e a matriz de pontos(MP)
+	//faz: [v]a = [M]a ^b * [v]b  Multiplica a MMB pela (MP) 
+	public static double[][] mudancaDeCoordenada(double[][] pontos, double[][] MM){
+		double[] V = new double[3];
+		double[] R = new double[3];
+		double[][] MatMud = new double[pontos.length][3];
+				
+		for (int i = 0; i < pontos.length; i++) {
+			for (int j = 0; j < 3; j++) {
+				V[j] = pontos[i][j];
+			} 
+		 R = multMatrizVetor(MM, V);
+		 MatMud[i][0] = R[0];
+		 MatMud[i][1] = R[1];
+		 MatMud[i][2] = R[2];
+		}
+		
+		return MatMud;
+	}
+	
 	
 	
 	/*

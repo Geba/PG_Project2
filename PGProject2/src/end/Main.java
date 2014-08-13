@@ -23,10 +23,11 @@ public class Main {
 	static Vetor U = new Vetor(3);
 	static Vetor V1 = new Vetor(3);
 	static double d;
-	static double hx; //coloquei double p n�o ter surpresa
-	static double hy; //coloquei double p n�o ter surpresa
+	static double hx; 
+	static double hy; 
 
 	//auxiliares
+	double[][] pontosTrans = new double[Np][3];
 
 	static void lerObjetos(){
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");

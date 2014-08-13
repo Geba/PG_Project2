@@ -27,6 +27,8 @@ public class NewMain {
 	static double hy; //coloquei double p n�o ter surpresa
 
 	//auxiliares
+	static double [][] matrizMudBase = new double[V.length][V.length];
+	static double[][] pontosTrans = new double[Np][3];
 
 	static void lerObjetos(){
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
@@ -133,14 +135,16 @@ public class NewMain {
 		System.out.println("N: "+Algb.VectorToString(N));
 
 		//Matriz de mudança de coordenada de camera
-		double [][] I = new double[V.length][V.length];
+		
 		for (int i = 0; i < V.length; i++) {
-			I[0][i] = U[i];
-			I[1][i] = V[i];
-			I[2][i] = N[i];
+			matrizMudBase[0][i] = U[i];
+			matrizMudBase[1][i] = V[i];
+			matrizMudBase[2][i] = N[i];
 			}
 	
 		//Mudança de base de todos os pontos e da posicao da fonte de luz Pl
+		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase);
+		Pl = Algb.multMatrizVetor(matrizMudBase, Pl);
 		
 		
 	}
