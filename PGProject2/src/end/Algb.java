@@ -97,7 +97,8 @@ public class Algb {
 		}
 		return retorno;
 	}
-
+	
+	
 	/*
 	 * public static Vetor sub(Vetor a, Vetor b) {// return a - b; Vetor resp =
 	 * new Vetor(a.getSize()); for (int i = 0; i < a.getSize(); i++) { resp[i] =

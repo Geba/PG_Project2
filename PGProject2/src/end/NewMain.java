@@ -1,5 +1,5 @@
 package end;
-//oi
+
 public class NewMain {
 	//objetos
 	static int Np;
@@ -105,15 +105,25 @@ public class NewMain {
 	public static void main(String[] args) {
 		lerCamera();
 		printCamera();
+		lerAtributos();
+		printAtributos();
+		lerObjetos();
+		printObjetos();
 
-
-		//Parte 3 - Mudan�a de coor - Mundiais -> C�mera 
-		//� preciso fazer a inversa dessa matriz para que ela possa ser  
-		//utilizada para a mudan�a de coor como requer a terceira parte.
+		
+		//Parte 3 - Mudanca de coor - Mundiais -> Camera 
+		//eh preciso fazer a inversa dessa matriz para que ela possa ser  
+		//utilizada para a mudanca de coordenada como requer a terceira parte.
+		//porém como as matrizes recebidas serao sempre ortornomais basta apenas 
+		//transpor ele por sendo ortornomal M^-1 = M^t
+		
+		//descobrindo U que é o produto vetorial de N e V
 		V = Algb.sub(V, Algb.projec(V, N));
 		System.out.println("V = V-Proj(V,N): "+Algb.VectorToString(V));
 		U = Algb.prodVetorial(N,  V);
 		System.out.println("NxV: "+ Algb.VectorToString(U));
+		
+		//normalizando
 		U =Algb.normalize(U);
 		V = Algb.normalize(V);
 		N = Algb.normalize(N);
@@ -122,59 +132,16 @@ public class NewMain {
 		System.out.println("U: "+Algb.VectorToString(U));
 		System.out.println("N: "+Algb.VectorToString(N));
 
-
-		double[] P = new double[3];
-		P[0] = 5; 
-		P[1] = -1;
-		P[2] = 2;
-
+		//Matriz de mudança de coordenada de camera
 		double [][] I = new double[V.length][V.length];
 		for (int i = 0; i < V.length; i++) {
 			I[0][i] = U[i];
 			I[1][i] = V[i];
 			I[2][i] = N[i];
-			
-		} System.out.println();
-		
-		for (int i = 0;i<3;i++){
-			System.out.println( + I[i][0] + " " + I[i][1] + " " + I[i][2]);
-		}
-		double[] Z = new double[3]; 
-
-		double[] teste = Algb.sub(P, C);
-		System.out.println(Algb.VectorToString(teste));
+			}
+	
+		//Mudança de base de todos os pontos e da posicao da fonte de luz Pl
 		
 		
-		
-		Z = Algb.multMatrizVetor(I, teste);
-
-		System.out.println(Z[0] + " " + Z[1] + " " + Z[2]);
-
-
-		//PARA QUANDO ESTIVERMOS LENDO O ARQUIVO
-		/*
-    	lerAtributos();
-		printAtributos();
-    	lerObjetos();
-    	printObjetos();
-
-		double [][] matrizRotInv = new double[V.size][V.size];
-		for (int i = 0; i < V.size; i++) {
-			matrizRotInv[i][0] = U[i];
-			matrizRotInv[i][1] = V[i];
-			matrizRotInv[i][2] = N[i];    	
-		}
-
-		 */
-
-		//double[] A = new double[](1, 2, 3);
-		//double[] B = new double[](4, 2, 1);
-		//
-		//double[] C = Algb.prodEscalar(A, B);
-		//C[0] + " " + C[1] + " " + C[2]
-		//System.out.println(Algb.prodEscalar(A, B));
-
-
-
 	}
 }
