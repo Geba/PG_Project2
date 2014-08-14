@@ -37,7 +37,7 @@ public class Algb {
 		return resp;
 	}
 
-	static double[] projec(double[] u, double[] v) {
+	public static double[] projec(double[] u, double[] v) {
 		double[] proj = new double[u.length];
 		double a = 0, b = 0, k;
 		double size = u.length;
