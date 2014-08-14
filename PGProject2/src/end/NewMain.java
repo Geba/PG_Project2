@@ -29,6 +29,7 @@ public class NewMain {
 	//auxiliares
 	static double [][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans = new double[Np][3];
+	static double[][] pontos2d = new double[Np][2];
 
 	static void lerObjetos(){
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
@@ -102,7 +103,14 @@ public class NewMain {
 		System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
 	}
 
-
+	public static double[][] projetar2d(double[][] pontos){
+		for (int i = 0; i < pontos.length; i++) {
+			pontos2d[i][0] = (pontos[i][0]*d)/(pontos[i][2]*hx);
+			pontos2d[i][1] = (pontos[i][1]*d)/(pontos[i][2]*hy);
+		}
+		return pontos2d;
+	}
+	
 
 	public static void main(String[] args) {
 		lerCamera();
@@ -145,6 +153,8 @@ public class NewMain {
 		//Mudança de base de todos os pontos e da posicao da fonte de luz Pl
 		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase);
 		Pl = Algb.multMatrizVetor(matrizMudBase, Pl);
+		
+		//projetando os pontos na tela
 		
 		
 	}
