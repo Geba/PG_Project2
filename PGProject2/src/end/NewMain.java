@@ -76,7 +76,7 @@ public class NewMain {
 	}
 
 	static void lerAtributos(){
-		arq  = new Arquivo("atributo.txt","lixoAtr.txt");
+		arq  = new Arquivo("atributos.txt","lixoAtr.txt");
 		Ia[0] = arq.readInt();Ia[1] = arq.readInt();Ia[2] = arq.readInt();
 		Ka = arq.readDouble();
 		Od[0] = arq.readInt();Od[1] = arq.readInt();Od[2] = arq.readInt();
