@@ -5,7 +5,9 @@ public class NewMain {
 	static int Np;
 	static int Nt;
 	static double[][] pontos;
-	static double[][] triangulos;
+	static int[][] triangulos;
+	static double[][] NormPontos;
+	static double[][] NormTriangulos;
 	//atributos
 	static int[] Ia = new int [3];
 	static double Ka;
@@ -36,7 +38,7 @@ public class NewMain {
 		Np = arq.readInt();
 		Nt = arq.readInt();
 		pontos = new double[Np][3];
-		triangulos = new double[Nt][3]; 
+		triangulos = new int[Nt][3]; 
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
 				pontos[i][j] = arq.readDouble();
@@ -44,7 +46,7 @@ public class NewMain {
 		}
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-				triangulos[i][j] = arq.readDouble();
+				triangulos[i][j] = arq.readInt();
 			}
 		}
 	}
@@ -110,6 +112,35 @@ public class NewMain {
 		}
 		return pontos2d;
 	}
+	
+	static void calcularNormais() {
+		for (int i = 0; i <= triangulos.length; i++) {
+			double[] v1, v2, n;
+			int pA, pB, pC;
+			pA = triangulos[i][0];
+			pB = triangulos[i][1];
+			pC = triangulos[i][2];
+
+			// descobrir quais vetores pegar aqui
+			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
+			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
+													// triangulo
+			n = Algb.prodVetorial(v1, v2);
+			for (int j = 0; j <= 3; j++) {
+				NormTriangulos[i] = n;//salva a normal no array d normais de triangulo
+				//soma essa normal no array de normal de vertices
+				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
+			}
+
+		}
+		for(int i=0;i<NormPontos.length;i++){
+			NormPontos[i] = Algb.normalize(NormPontos[i]);
+		}
+
+	}
+
 	
 
 	public static void main(String[] args) {
