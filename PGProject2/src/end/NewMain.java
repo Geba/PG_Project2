@@ -111,6 +111,9 @@ public class NewMain {
 		for (int i = 0; i < pontos.length; i++) {
 			pontos2d[i][0] = (pontos[i][0]*d)/(pontos[i][2]*hx);
 			pontos2d[i][1] = (pontos[i][1]*d)/(pontos[i][2]*hy);
+			
+			pontos2d[i][0] = ((pontos2d[i][0]+1)/2)* (800-1);
+			pontos2d[i][1] = ((1-pontos2d[i][1])/2)* (600-1);		
 		}
 		return pontos2d;
 	}
