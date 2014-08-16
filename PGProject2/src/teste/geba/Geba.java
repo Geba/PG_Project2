@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL4;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
@@ -76,28 +77,28 @@ public class Geba implements GLEventListener {
 	}
 
 	static void printObjetos() {
-		//System.out.println("Np: " + Np + " Nt: " + Np);
+		// System.out.println("Np: " + Np + " Nt: " + Np);
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
-				//System.out.print(pontos[i][j] + " ");
+				// System.out.print(pontos[i][j] + " ");
 			}
 		}
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-				//System.out.println(triangulos[i][j] + " ");
+				// System.out.println(triangulos[i][j] + " ");
 			}
 		}
 	}
 
 	static void printAtributos() {
-		//System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
-		//System.out.println("Ka: " + Ka);
-		//System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
-		//System.out.println("Kd: " + Kd);
-		//System.out.println("Ks: " + Ks);
-		//System.out.println("n: " + n);
-		//System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
-		//System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
+		// System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
+		// System.out.println("Ka: " + Ka);
+		// System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
+		// System.out.println("Kd: " + Kd);
+		// System.out.println("Ks: " + Ks);
+		// System.out.println("n: " + n);
+		// System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
+		// System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
 	}
 
 	static void lerAtributos() {
@@ -138,16 +139,19 @@ public class Geba implements GLEventListener {
 	}
 
 	static void printCamera() {
-		//System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
-		//System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
-		//System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
-		//System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
+		// System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
+		// System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
+		// System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
+		// System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
 	}
 
 	public static double[][] projetar2d(double[][] pontos) {
+
 		for (int i = 0; i < pontos.length; i++) {
 			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
 			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
+			// pontos2d[i][0] = ((pontos2d[i][0]+1)/2)* (800-1);
+			// pontos2d[i][1] = ((1-pontos2d[i][1])/2)* (600-1);
 		}
 		return pontos2d;
 	}
@@ -196,23 +200,23 @@ public class Geba implements GLEventListener {
 
 	public static void main(String[] args) {
 
-		
 		lerCamera();
 		printCamera();
 		lerAtributos();
 		printAtributos();
 		lerObjetos();
 		printObjetos();
-pontos2d = projetar2d(pontos);
+		pontos2d = projetar2d(pontos);
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
+		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase, C);
+		pontos2d = projetar2d(pontosTrans);
 
 		Frame frame = new Frame("AWT Window Test");
 		frame.setSize(300, 300);
 		frame.add(canvas);
 		frame.setVisible(true);
-		
 
 		// by default, an AWT Frame doesn't do anything when you click
 		// the close button; this bit of code will terminate the program when
@@ -224,7 +228,7 @@ pontos2d = projetar2d(pontos);
 		});
 		canvas.addGLEventListener(new Geba());
 		FPSAnimator animator = new FPSAnimator(canvas, 60);
-		// animator.add(canvas);
+		animator.add(canvas);
 		animator.start();
 	}
 
@@ -259,33 +263,35 @@ pontos2d = projetar2d(pontos);
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 
 		// draw a triangle filling the window
-		gl.glBegin(GL.GL_LINE_LOOP);
-		gl.glColor3f(1, 0, 0);
-		gl.glVertex2d(-c, -c);
-		gl.glColor3f(0, 1, 0);
-		gl.glVertex2d(0, c);
-		gl.glColor3f(0, 0, 1);
-		gl.glVertex2d(s, -s);
-		gl.glEnd();
-
-		gl.glBegin(GL.GL_LINE_STRIP);
-		gl.glColor3f(1, 0, 0);
-		gl.glVertex2d(c, -c);
-		gl.glColor3f(0, 0, 1);
-		gl.glVertex2d(0, -c);
-		gl.glColor3f(0, 1, 0);
-		gl.glVertex2d(-s, s);
-		gl.glEnd();
-
-		for (int t = 0; t < Nt-1; t++) {
+		// gl.glBegin(GL.GL_LINE_LOOP);
+		// gl.glColor3f(1, 0, 0);
+		// gl.glVertex2d(-c, -c);
+		// gl.glColor3f(0, 1, 0);
+		// gl.glVertex2d(0, c);
+		// gl.glColor3f(0, 0, 1);
+		// gl.glVertex2d(s, -s);
+		// gl.glEnd();
+		// gl.glBegin(GL.GL_LINE_STRIP);
+		// gl.glColor3f(1, 0, 0);
+		// gl.glVertex2d(c, -c);
+		// gl.glColor3f(0, 0, 1);
+		// gl.glVertex2d(0, -c);
+		// gl.glColor3f(0, 1, 0);
+		// gl.glVertex2d(-s, s);
+		// gl.glEnd();
+		for (int t = 0; t < Nt - 1; t++) {
 			gl.glBegin(GL.GL_LINE_LOOP);
-			for(int k=0;k<3;k++){
-				double [] a = pontos[triangulos[t][k]-1];
+			for (int k = 0; k < 3; k++) {
+				System.out.println(" " + pontosTrans[0][1] + " "
+						+ pontosTrans[0][2] + " " + pontosTrans[0][0]);
+				System.out.println(" " + pontos2d[0][1] + " "
+						+ pontos2d[0][0]);
+				double[] a = pontosTrans[triangulos[t][k] - 1];
 				gl.glColor3f(0, 1, 0);
-				gl.glVertex2d(a[0], a[1]);
+				gl.glVertex2d(a[0] / 10, a[1] / 10);
 			}
-			gl.glEnd();				
-			
+			gl.glEnd();
+
 		}
 
 	}
