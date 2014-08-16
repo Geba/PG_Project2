@@ -1,4 +1,4 @@
-package teste.geba;
+package end2;
 
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
@@ -17,9 +17,8 @@ import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import end.Algb;
-import end.Arquivo;
 
-public class Geba implements GLEventListener {
+public class FinalClass implements GLEventListener {
 
 	private double theta = 0;
 	private double s = 0;
@@ -150,8 +149,9 @@ public class Geba implements GLEventListener {
 		for (int i = 0; i < pontos.length; i++) {
 			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
 			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
-//			pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (800 - 1);
-//			pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (600 - 1);
+			
+			pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (800 - 1);
+			pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (600 - 1);
 		}
 		return pontos2d;
 	}
@@ -165,22 +165,22 @@ public class Geba implements GLEventListener {
 			pC = triangulos[i][2];
 
 			// descobrir quais vetores pegar aqui
-			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
-			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
+			v1 = Algeb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
+			v2 = Algeb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
 													// triangulo
-			n = Algb.prodVetorial(v1, v2);
+			n = Algeb.prodVetorial(v1, v2);
 			for (int j = 0; j <= 3; j++) {
 				NormTriangulos[i] = n;// salva a normal no array d normais de
 										// triangulo
 				// soma essa normal no array de normal de vertices
-				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pA] = Algeb.soma(NormPontos[pA], n);
+				NormPontos[pB] = Algeb.soma(NormPontos[pA], n);
+				NormPontos[pC] = Algeb.soma(NormPontos[pA], n);
 			}
 
 		}
 		for (int i = 0; i < NormPontos.length; i++) {
-			NormPontos[i] = Algb.normalize(NormPontos[i]);
+			NormPontos[i] = Algeb.normalize(NormPontos[i]);
 		}
 
 	}
@@ -209,16 +209,23 @@ public class Geba implements GLEventListener {
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
-		for (int i = 0; i < V.length; i++) {
-			matrizMudBase[0][i] = U[i];
-			matrizMudBase[1][i] = V[i];
-			matrizMudBase[2][i] = N[i];
-		}
-		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase, C);
+		V = Algb.sub(V, Algb.projec(V, N));
+		System.out.println("V = V-Proj(V,N): " + Algb.VectorToString(V));
+		U = Algb.prodVetorial(N, V);
+		System.out.println("NxV: " + Algb.VectorToString(U));
+
+		// normalizando
+
+		U = Algb.normalize(U);
+		V = Algb.normalize(V);
+		N = Algb.normalize(N);
+
+		matrizMudBase = getMudBase(U, V, N);
+		pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
+		// ok até aqui
+		teste();
+
 		pontos2d = projetar2d(pontosTrans);
-		
-		
-		
 
 		Frame frame = new Frame("AWT Window Test");
 		frame.setSize(300, 300);
@@ -233,10 +240,68 @@ public class Geba implements GLEventListener {
 				System.exit(0);
 			}
 		});
-		canvas.addGLEventListener(new Geba());
+		canvas.addGLEventListener(new FinalClass());
 		FPSAnimator animator = new FPSAnimator(canvas, 60);
 		animator.add(canvas);
 		animator.start();
+	}
+
+	private static void teste() {
+		double tes[][] = {{1,2,7}, {8,1,2},{2, 0 ,4}};
+		double v[] = {1, 3, -4};
+		//System.out.println(Algeb.VectorToString(Algeb.multMatrizVetor(tes, v)));
+		
+		
+		
+		double[][] pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
+		//System.out.println(pontosTrans.length);
+		for(int i=0;i<pontosTrans.length;i++){
+		//System.out.println(" "+Algeb.VectorToString(pontosTrans[i]));
+		}
+		
+
+	}
+
+	private static double[][] getMudBase(double[] u, double[] v, double[] n) {
+		double mudBase[][] = new double[v.length][v.length];
+		for (int i = 0; i < v.length; i++) {
+			mudBase[0][i] = u[i];
+			mudBase[1][i] = v[i];
+			mudBase[2][i] = n[i];
+		}
+		return mudBase;
+	}
+	
+	public static double[][] getNewCoordinates(double[][] pontos,
+			double[][] mudBase, double[] camera) {
+		double[][] retorno = new double[pontos.length][3];
+		for (int i = 0; i < pontos.length; i++) {
+			double[] ponto = pontos[i];
+			ponto = Algeb.sub(ponto, camera);
+			//System.out.println(Algeb.VectorToString(ponto));
+			ponto = Algeb.multMatrizVetor(mudBase, ponto);
+			System.out.println(ponto[0]);
+			retorno[i] = ponto;
+		}
+		return retorno;
+	}
+
+	private void render(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		for (int t = 0; t < Nt - 1; t++) {
+			gl.glBegin(GL.GL_LINE_LOOP);
+			for (int k = 0; k < 3; k++) {
+				double[] a = pontos2d[triangulos[t][k] - 1];
+				gl.glColor3f(1, 1, 1);
+				double zoom = 900;
+				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
+				
+			}
+			gl.glEnd();
+
+		}
+
 	}
 
 	@Override
@@ -258,49 +323,7 @@ public class Geba implements GLEventListener {
 	}
 
 	private void update() {
-		theta += 0.01;
-		s = Math.sin(theta);
-		c = Math.cos(theta);
 
 	}
 
-	private void render(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
-
-		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-
-		// draw a triangle filling the window
-		// gl.glBegin(GL.GL_LINE_LOOP);
-		// gl.glColor3f(1, 0, 0);
-		// gl.glVertex2d(-c, -c);
-		// gl.glColor3f(0, 1, 0);
-		// gl.glVertex2d(0, c);
-		// gl.glColor3f(0, 0, 1);
-		// gl.glVertex2d(s, -s);
-		// gl.glEnd();
-		// gl.glBegin(GL.GL_LINE_STRIP);
-		// gl.glColor3f(1, 0, 0);
-		// gl.glVertex2d(c, -c);
-		// gl.glColor3f(0, 0, 1);
-		// gl.glVertex2d(0, -c);
-		// gl.glColor3f(0, 1, 0);
-		// gl.glVertex2d(-s, s);
-		// gl.glEnd();
-		for (int t = 0; t < Nt-1; t++) {
-			gl.glBegin(GL.GL_LINE_LOOP);
-			for (int k = 0; k < 3; k++) {
-//				System.out.println(" " + pontosTrans[0][1] + " "
-//						+ pontosTrans[0][2] + " " + pontosTrans[0][0]);
-//				System.out.println(" " + pontos2d[0][1] + " "
-//						+ pontos2d[0][0]);
-				double[] a = pontos[triangulos[t][k] - 1];
-				gl.glColor3f(1,1 , 1);
-				double zoom = 500;
-				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
-			}
-			gl.glEnd();
-
-		}
-
-	}
 }
