@@ -1,11 +1,27 @@
 package end;
-//oi
+
+import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLProfile;
+import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.glu.GLU;
+import javax.swing.JFrame;
+
 public class Main {
 	//objetos
 	static int Np;
 	static int Nt;
 	static double[][] pontos;
-	static double[][] triangulos;
+	static int[][] triangulos;
+	static double[][] NormPontos;
+	static double[][] NormTriangulos;
 	//atributos
 	static int[] Ia = new int [3];
 	static double Ka;
@@ -17,24 +33,26 @@ public class Main {
 	static double[] Pl = new double [3];
 	static Arquivo arq;
 	//camera
-	static Vetor C = new Vetor(3);
-	static Vetor N = new Vetor(3);
-	static Vetor V = new Vetor(3);
-	static Vetor U = new Vetor(3);
-	static Vetor V1 = new Vetor(3);
+	static double[] C = new double[3];
+	static double[] N = new double[3];
+	static double[] V = new double[3];
+	static double[] U = new double[3];
+	static double[] V1 = new double[3];
 	static double d;
-	static double hx; 
-	static double hy; 
+	static double hx; //coloquei double p n�o ter surpresa
+	static double hy; //coloquei double p n�o ter surpresa
 
 	//auxiliares
-	double[][] pontosTrans = new double[Np][3];
+	static double [][] matrizMudBase = new double[V.length][V.length];
+	static double[][] pontosTrans = new double[Np][3];
+	static double[][] pontos2d = new double[Np][2];
 
 	static void lerObjetos(){
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
 		Np = arq.readInt();
 		Nt = arq.readInt();
 		pontos = new double[Np][3];
-		triangulos = new double[Nt][3]; 
+		triangulos = new int[Nt][3]; 
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
 				pontos[i][j] = arq.readDouble();
@@ -42,7 +60,7 @@ public class Main {
 		}
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-				triangulos[i][j] = arq.readDouble();
+				triangulos[i][j] = arq.readInt();
 			}
 		}
 	}
@@ -72,7 +90,7 @@ public class Main {
 	}
 
 	static void lerAtributos(){
-		arq  = new Arquivo("atributo.txt","lixoAtr.txt");
+		arq  = new Arquivo("atributos.txt","lixoAtr.txt");
 		Ia[0] = arq.readInt();Ia[1] = arq.readInt();Ia[2] = arq.readInt();
 		Ka = arq.readDouble();
 		Od[0] = arq.readInt();Od[1] = arq.readInt();Od[2] = arq.readInt();
@@ -81,101 +99,205 @@ public class Main {
 		n = arq.readInt();
 		Il[0] = arq.readDouble();Il[1] = arq.readDouble();Il[2] = arq.readDouble();
 		Pl[0] = arq.readDouble();Pl[1] = arq.readDouble();Pl[2] = arq.readDouble();
-
 	}
 
 	static void lerCamera(){
 		arq = new Arquivo("camera.txt","lixoCam.txt");
-		C.coor[0] = arq.readDouble(); C.coor[1] = arq.readDouble(); C.coor[2] = arq.readDouble();
-		N.coor[0] = arq.readDouble(); N.coor[1] = arq.readDouble();N.coor[2] = arq.readDouble();
-		V.coor[0] = arq.readDouble(); V.coor[1] = arq.readDouble(); V.coor[2] = arq.readDouble();
+		C[0] = arq.readDouble(); C[1] = arq.readDouble(); C[2] = arq.readDouble();
+		N[0] = arq.readDouble(); N[1] = arq.readDouble();N[2] = arq.readDouble();
+		V[0] = arq.readDouble(); V[1] = arq.readDouble(); V[2] = arq.readDouble();
 		d = arq.readDouble();
 		hx = arq.readDouble();hy = arq.readDouble();
 	}
 
 
 	static void printCamera(){
-		System.out.println("C: " + C.coor[0] + " " +C.coor[1] + " " + C.coor[2]); 
-		System.out.println("N: " + N.coor[0] + " " +N.coor[1] + " " + N.coor[2]);
-		System.out.println("V: " + V.coor[0] + " " + V.coor[1] + " " + V.coor[2]);
+		System.out.println("C: " + C[0] + " " +C[1] + " " + C[2]); 
+		System.out.println("N: " + N[0] + " " +N[1] + " " + N[2]);
+		System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
 		System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
 	}
 
+	public static double[][] projetar2d(double[][] pontos){
+		for (int i = 0; i < pontos.length; i++) {
+			pontos2d[i][0] = (pontos[i][0]*d)/(pontos[i][2]*hx);
+			pontos2d[i][1] = (pontos[i][1]*d)/(pontos[i][2]*hy);
+		}
+		return pontos2d;
+	}
 
+	static void calcularNormais() {
+		for (int i = 0; i <= triangulos.length; i++) {
+			double[] v1, v2, n;
+			int pA, pB, pC;
+			pA = triangulos[i][0];
+			pB = triangulos[i][1];
+			pC = triangulos[i][2];
+
+			// descobrir quais vetores pegar aqui
+			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
+			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
+			// triangulo
+			n = Algb.prodVetorial(v1, v2);
+			for (int j = 0; j <= 3; j++) {
+				NormTriangulos[i] = n;//salva a normal no array d normais de triangulo
+				//soma essa normal no array de normal de vertices
+				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
+			}
+
+		}
+		for(int i=0;i<NormPontos.length;i++){
+			NormPontos[i] = Algb.normalize(NormPontos[i]);
+		}
+
+	}
+
+
+	public void varredura(double[][] pontos2d){
+		double px1,px2;
+		double varicao;
+
+		px1 = pontos2d[0][0];
+		px2 = pontos2d[1][0];
+
+		for(double y=pontos2d[0][1]; y<pontos2d[1][1]; y++){
+
+		}
+
+	}
+
+	public void printaew (){
+		int a, b, c;
+		for (int i = 0; i < triangulos.length; i++) {
+				a = triangulos[i][0]; 
+				b = triangulos[i][1];
+				c = triangulos[i][2];
+			teste.render(pontos, a, b, c);
+		}
+	}
+	
 
 	public static void main(String[] args) {
 		lerCamera();
 		printCamera();
-
-
-		//Parte 3 - Mudan�a de coor - Mundiais -> C�mera 
-		//� preciso fazer a inversa dessa matriz para que ela possa ser  
-		//utilizada para a mudan�a de coor como requer a terceira parte.
-		V = Algb.sub(V, Algb.projec(V, N));
-		System.out.println("V = V-Proj(V,N): "+V);
-		U = Algb.prodVetorial(N, V);
-		System.out.println("NxV: "+ U);
-		U.normalize();
-		V.normalize();
-		N.normalize();
-		
-		System.out.println("V: "+V);
-		System.out.println("U: "+U);
-		System.out.println("N: "+N);
-
-
-		Vetor P = new Vetor(3);
-		P.coor[0] = 5; 
-		P.coor[1] = -1;
-		P.coor[2] = 2;
-
-		double [][] I = new double[V.size][V.size];
-		for (int i = 0; i < V.size; i++) {
-			I[0][i] = U.coor[i];
-			I[1][i] = V.coor[i];
-			I[2][i] = N.coor[i];
-			
-		} System.out.println();
-		
-		for (int i = 0;i<3;i++){
-			System.out.println( + I[i][0] + " " + I[i][1] + " " + I[i][2]);
-		}
-		double[] Z = new double[3]; 
-
-		Vetor teste = Algb.sub(P, C);
-		System.out.println(teste.toString());
-		
-		
-		
-		Z = Algb.multMatrizVetor(I, teste);
-
-		System.out.println(Z[0] + " " + Z[1] + " " + Z[2]);
-
-
-		//PARA QUANDO ESTIVERMOS LENDO O ARQUIVO
-		/*
-    	lerAtributos();
+		lerAtributos();
 		printAtributos();
-    	lerObjetos();
-    	printObjetos();
+		lerObjetos();
+		printObjetos();
 
-		double [][] matrizRotInv = new double[V.size][V.size];
-		for (int i = 0; i < V.size; i++) {
-			matrizRotInv[i][0] = U.coor[i];
-			matrizRotInv[i][1] = V.coor[i];
-			matrizRotInv[i][2] = N.coor[i];    	
+
+		//Parte 3 - Mudanca de coor - Mundiais -> Camera 
+		//eh preciso fazer a inversa dessa matriz para que ela possa ser  
+		//utilizada para a mudanca de coordenada como requer a terceira parte.
+		//porém como as matrizes recebidas serao sempre ortornomais basta apenas 
+		//transpor ele por sendo ortornomal M^-1 = M^t
+
+		//descobrindo U que é o produto vetorial de N e V
+		V = Algb.sub(V, Algb.projec(V, N));
+		System.out.println("V = V-Proj(V,N): "+Algb.VectorToString(V));
+		U = Algb.prodVetorial(N,  V);
+		System.out.println("NxV: "+ Algb.VectorToString(U));
+
+		//normalizando
+		U =Algb.normalize(U);
+		V = Algb.normalize(V);
+		N = Algb.normalize(N);
+
+		System.out.println("V: "+Algb.VectorToString(V));
+		System.out.println("U: "+Algb.VectorToString(U));
+		System.out.println("N: "+Algb.VectorToString(N));
+
+		//Matriz de mudança de coordenada de camera
+
+		for (int i = 0; i < V.length; i++) {
+			matrizMudBase[0][i] = U[i];
+			matrizMudBase[1][i] = V[i];
+			matrizMudBase[2][i] = N[i];
 		}
 
-		 */
+		//Mudança de base de todos os pontos e da posicao da fonte de luz Pl
+		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase);
+		Pl = Algb.multMatrizVetor(matrizMudBase, Pl);
 
-		//Vetor A = new Vetor(1, 2, 3);
-		//Vetor B = new Vetor(4, 2, 1);
-		//
-		//Vetor C = Algb.prodEscalar(A, B);
-		//C.coor[0] + " " + C.coor[1] + " " + C.coor[2]
-		//System.out.println(Algb.prodEscalar(A, B));
+		//projetando os pontos na tela
+		 GLProfile glprofile = GLProfile.getDefault();
+         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
+         final GLCanvas glcanvas = new GLCanvas( glcapabilities );
 
+         glcanvas.addGLEventListener( new GLEventListener() {
+            
+                
+                 //essas são as funções que vc tem que dar override
+                 //é tipo aquelas com c++ que a gente usa que chama outras funções
+             @Override
+             public void reshape( GLAutoDrawable glautodrawable, int x, int y, int width, int height ) {
+                 Triangles.setup( glautodrawable.getGL().getGL2(), width, height );
+             }
+            
+             @Override
+             public void init( GLAutoDrawable glautodrawable ) {
+             }
+            
+             @Override
+             public void dispose( GLAutoDrawable glautodrawable ) {
+             }
+            
+             @Override
+             public void display( GLAutoDrawable glautodrawable ) {
+                 Triangles.render( glautodrawable.getGL().getGL2(), ((Component) glautodrawable),((Component) glautodrawable), ((Component) glautodrawable));
+             }
+         });
+         //Cria uma janelinha
+         final JFrame frame = new JFrame( "Desenhar triângulo" );
+         frame.add( glcanvas );
+         //Quando fechar a janelinha destroi o desenho pra não ficar na memoria
+         frame.addWindowListener( new WindowAdapter() {
+             public void windowClosing(WindowEvent windowevent ) {
+                 frame.remove( glcanvas );
+                 frame.dispose();
+                 System.exit( 0 );
+             }
+         });
 
+         frame.setSize( 640, 480 );
+         frame.setVisible( true );
+		
+		
+	}
+}
+class Triangles {
+    protected static void setup( GL2 gl2, int width, int height ) {
+        gl2.glMatrixMode( GL2.GL_PROJECTION );
+        gl2.glLoadIdentity();
+ 
+        // as coordenadas começam no canto inferior esquerdo,e largura = tam janela
+        GLU glu = new GLU();
+        glu.gluOrtho2D( 0.0f, width, 0.0f, height );
+ 
+        gl2.glMatrixMode( GL2.GL_MODELVIEW );
+        gl2.glLoadIdentity();
+ 
+        gl2.glViewport( 0, 0, width, height );
+    }
+ 
+    protected static void render( GL2 gl2, double[][]vertices, int a, int b, int c) {
+ //       gl2.glClear( GL.GL_COLOR_BUFFER_BIT );
+ 
+        // desenha o triângulo
+        gl2.glLoadIdentity();
+        gl2.glBegin( GL.GL_TRIANGLES ); //pra linhas tem que usar lines
+        gl2.glColor3f(.5f, .5f, .5f);
+        gl2.glVertex3d(vertices[a][0],vertices[a][1], vertices[a][2]);
+        gl2.glVertex3d(vertices[b][0],vertices[b][1], vertices[b][2]);
+        gl2.glVertex3d(vertices[c][0],vertices[c][1], vertices[c][2]);
+        gl2.glColor3f(.5f, .5f, .5f);
+        gl2.glEnd();
+    }
 
+	public static void render(GL2 gl2, Component component,
+			Component component2, Component component3) {
+		// TODO Auto-generated method stub
 	}
 }

@@ -1,5 +1,7 @@
 package end;
 
+import javax.media.opengl.GL;
+
 public class NewMain {
 	//objetos
 	static int Np;
@@ -142,7 +144,22 @@ public class NewMain {
 	}
 
 	
-
+	public void varredura(double[][] pontos2d){
+			double px1,px2;
+			double varicao;
+			 
+			px1 = pontos2d[0][0];
+			px2 = pontos2d[1][0];
+			
+			for(double y=pontos2d[0][1]; y<pontos2d[1][1]; y++){
+				
+			}
+			
+			
+			
+		
+	}
+	
 	public static void main(String[] args) {
 		lerCamera();
 		printCamera();
@@ -186,7 +203,6 @@ public class NewMain {
 		Pl = Algb.multMatrizVetor(matrizMudBase, Pl);
 		
 		//projetando os pontos na tela
-		
 		
 	}
 }
