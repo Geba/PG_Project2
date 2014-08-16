@@ -20,8 +20,8 @@ public class Main {
 	static int Nt;
 	static double[][] pontos;
 	static int[][] triangulos;
-	static double[][] NormPontos;
-	static double[][] NormTriangulos;
+	static double[][] NormaPontos;
+	static double[][] NormaTriangulos;
 	//atributos
 	static int[] Ia = new int [3];
 	static double Ka;
@@ -127,9 +127,10 @@ public class Main {
 	}
 
 	static void calcularNormais() {
+		double[] v1, v2, n;
+		int pA, pB, pC;
+		double[] zero = {0, 0, 0};
 		for (int i = 0; i <= triangulos.length; i++) {
-			double[] v1, v2, n;
-			int pA, pB, pC;
 			pA = triangulos[i][0];
 			pB = triangulos[i][1];
 			pC = triangulos[i][2];
@@ -139,17 +140,21 @@ public class Main {
 			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
 			// triangulo
 			n = Algb.prodVetorial(v1, v2);
+			if(Algb.prodEscalar(C, n) > 0){
+				n = Algb.sub(zero, n);
+			}
+			
 			for (int j = 0; j <= 3; j++) {
-				NormTriangulos[i] = n;//salva a normal no array d normais de triangulo
+				NormaTriangulos[i] = n;//salva a normal no array d normais de triangulo
 				//soma essa normal no array de normal de vertices
-				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
+				NormaPontos[pA] = Algb.soma(NormaPontos[pA], n);
+				NormaPontos[pB] = Algb.soma(NormaPontos[pA], n);
+				NormaPontos[pC] = Algb.soma(NormaPontos[pA], n);
 			}
 
 		}
-		for(int i=0;i<NormPontos.length;i++){
-			NormPontos[i] = Algb.normalize(NormPontos[i]);
+		for(int i=0;i<NormaPontos.length;i++){
+			NormaPontos[i] = Algb.normalize(NormaPontos[i]);
 		}
 
 	}
@@ -178,7 +183,6 @@ public class Main {
 		}
 	}
 	
-
 	public static void main(String[] args) {
 		lerCamera();
 		printCamera();
