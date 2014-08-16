@@ -146,12 +146,12 @@ public class Geba implements GLEventListener {
 	}
 
 	public static double[][] projetar2d(double[][] pontos) {
-
+		double[][] pontos2d = new double[pontos.length][2];
 		for (int i = 0; i < pontos.length; i++) {
 			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
 			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
-			// pontos2d[i][0] = ((pontos2d[i][0]+1)/2)* (800-1);
-			// pontos2d[i][1] = ((1-pontos2d[i][1])/2)* (600-1);
+//			pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (800 - 1);
+//			pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (600 - 1);
 		}
 		return pontos2d;
 	}
@@ -206,12 +206,19 @@ public class Geba implements GLEventListener {
 		printAtributos();
 		lerObjetos();
 		printObjetos();
-		pontos2d = projetar2d(pontos);
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
+		for (int i = 0; i < V.length; i++) {
+			matrizMudBase[0][i] = U[i];
+			matrizMudBase[1][i] = V[i];
+			matrizMudBase[2][i] = N[i];
+		}
 		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase, C);
 		pontos2d = projetar2d(pontosTrans);
+		
+		
+		
 
 		Frame frame = new Frame("AWT Window Test");
 		frame.setSize(300, 300);
@@ -279,16 +286,17 @@ public class Geba implements GLEventListener {
 		// gl.glColor3f(0, 1, 0);
 		// gl.glVertex2d(-s, s);
 		// gl.glEnd();
-		for (int t = 0; t < Nt - 1; t++) {
+		for (int t = 0; t < Nt-1; t++) {
 			gl.glBegin(GL.GL_LINE_LOOP);
 			for (int k = 0; k < 3; k++) {
-				System.out.println(" " + pontosTrans[0][1] + " "
-						+ pontosTrans[0][2] + " " + pontosTrans[0][0]);
-				System.out.println(" " + pontos2d[0][1] + " "
-						+ pontos2d[0][0]);
-				double[] a = pontosTrans[triangulos[t][k] - 1];
-				gl.glColor3f(0, 1, 0);
-				gl.glVertex2d(a[0] / 10, a[1] / 10);
+//				System.out.println(" " + pontosTrans[0][1] + " "
+//						+ pontosTrans[0][2] + " " + pontosTrans[0][0]);
+//				System.out.println(" " + pontos2d[0][1] + " "
+//						+ pontos2d[0][0]);
+				double[] a = pontos2d[triangulos[t][k] - 1];
+				gl.glColor3f(1,1 , 1);
+				double zoom = 40;
+				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
 			}
 			gl.glEnd();
 

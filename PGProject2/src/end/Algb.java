@@ -109,9 +109,7 @@ public class Algb {
 				V[j] = pontos[i][j];
 			} 
 		 R = multMatrizVetor(MM, sub(V, C));
-		 MatMud[i][0] = R[0];
-		 MatMud[i][1] = R[1];
-		 MatMud[i][2] = R[2];
+		 MatMud[i]=R;
 		}
 		
 		return MatMud;
