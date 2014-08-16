@@ -14,7 +14,7 @@ public class NewMain {
 	// atributos
 	static int[] Ia = new int[3];
 	static double Ka;
-	static int Od[] = new int[3];
+	static int[] Od = new int[3];
 	static double Kd;
 	static double Ks;
 	static double n;
@@ -35,6 +35,12 @@ public class NewMain {
 	static double[][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans = new double[Np][3];
 	static double[][] pontos2d = new double[Np][2];
+	static double[] zero = {0, 0, 0};
+	static double[] Pphong = new double[3];
+	static double[] Nphong = new double[3];
+	static double[] Lphong = new double[3];
+	static double[] menosPphong = new double[3];
+	static double[] Vphong = new double[3];	
 
 	static void lerObjetos() {
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
@@ -134,11 +140,11 @@ public class NewMain {
 			// descobrir quais vetores pegar aqui
 			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
 			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
-													// triangulo
+			// triangulo
 			n = Algb.prodVetorial(v1, v2);
 			for (int j = 0; j <= 3; j++) {
 				NormTriangulos[i] = n;// salva a normal no array d normais de
-										// triangulo
+				// triangulo
 				// soma essa normal no array de normal de vertices
 				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
 				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
@@ -228,5 +234,16 @@ public class NewMain {
 
 		// projetando os pontos na tela
 
+
+		//PHONG
+		//aqui eu preciso da coordenada baricêntrica das normais de um ponto;
+		//variavel global Pphong criada para ser o ponto de entrada
+		//variavel global Nphong criada para ser resultado da coordenada Baricentrica das normais de um ponto;
+		Lphong = Algb.normalize(Algb.sub(Pl, Pphong));
+		menosPphong = Algb.sub(zero, Pphong);  
+		Vphong = Algb.normalize(menosPphong);
+
+		int Ilum = Ia + Ie + (Algb.prodEscalar(Lphong, Nphong)*Algb.prodEscalar(Od, Il)* Kd);
+		
 	}
 }
