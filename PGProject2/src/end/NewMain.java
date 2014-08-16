@@ -1,7 +1,7 @@
 package end;
 
 import javax.media.opengl.GL;
-
+//daniel
 public class NewMain {
 	//objetos
 	static int Np;
