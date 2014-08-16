@@ -218,7 +218,7 @@ public class Main {
 		}
 
 		//Mudança de base de todos os pontos e da posicao da fonte de luz Pl
-		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase);
+		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase, C);
 		Pl = Algb.multMatrizVetor(matrizMudBase, Pl);
 
 		//projetando os pontos na tela
