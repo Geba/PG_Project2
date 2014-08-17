@@ -13,6 +13,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 
+
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -149,7 +150,7 @@ public class FinalClass implements GLEventListener {
 		for (int i = 0; i < pontos.length; i++) {
 			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
 			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
-			
+
 			pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (800 - 1);
 			pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (600 - 1);
 		}
@@ -247,18 +248,16 @@ public class FinalClass implements GLEventListener {
 	}
 
 	private static void teste() {
-		double tes[][] = {{1,2,7}, {8,1,2},{2, 0 ,4}};
-		double v[] = {1, 3, -4};
-		//System.out.println(Algeb.VectorToString(Algeb.multMatrizVetor(tes, v)));
-		
-		
-		
+		double tes[][] = { { 1, 2, 7 }, { 8, 1, 2 }, { 2, 0, 4 } };
+		double v[] = { 1, 3, -4 };
+		// System.out.println(Algeb.VectorToString(Algeb.multMatrizVetor(tes,
+		// v)));
+
 		double[][] pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
-		//System.out.println(pontosTrans.length);
-		for(int i=0;i<pontosTrans.length;i++){
-		//System.out.println(" "+Algeb.VectorToString(pontosTrans[i]));
+		// System.out.println(pontosTrans.length);
+		for (int i = 0; i < pontosTrans.length; i++) {
+			// System.out.println(" "+Algeb.VectorToString(pontosTrans[i]));
 		}
-		
 
 	}
 
@@ -271,14 +270,14 @@ public class FinalClass implements GLEventListener {
 		}
 		return mudBase;
 	}
-	
+
 	public static double[][] getNewCoordinates(double[][] pontos,
 			double[][] mudBase, double[] camera) {
 		double[][] retorno = new double[pontos.length][3];
 		for (int i = 0; i < pontos.length; i++) {
 			double[] ponto = pontos[i];
 			ponto = Algeb.sub(ponto, camera);
-			//System.out.println(Algeb.VectorToString(ponto));
+			// System.out.println(Algeb.VectorToString(ponto));
 			ponto = Algeb.multMatrizVetor(mudBase, ponto);
 			System.out.println(ponto[0]);
 			retorno[i] = ponto;
@@ -296,7 +295,7 @@ public class FinalClass implements GLEventListener {
 				gl.glColor3f(1, 1, 1);
 				double zoom = 900;
 				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
-				
+
 			}
 			gl.glEnd();
 
@@ -324,6 +323,17 @@ public class FinalClass implements GLEventListener {
 
 	private void update() {
 
+	}
+
+	public static double[] coefsBaricentricos(double[] P, double[] P1,
+			double[] P2, double[] P3) {
+		double x = P[0], y = P[1], x1 = P1[0], y1 = P1[1], x2 = P2[0], y2 = P2[1], x3 = P[0], y3 = P[1];
+		double u, v, w;
+		double denom = ((x1 - x3) * (y2 - y3) - (y1 - y3) * (x2 - x3));
+		u = ((y2 - y3) * (x - x3) - ((x3 - x2) * (y3 - y))) / denom;
+		v = (((y3 - y1) * (x - x3)) - ((x1 - x3) * (y3 - y))) / denom;
+		w = 1.0 - u - v;
+		return new double[] { u, v, w };
 	}
 
 }
