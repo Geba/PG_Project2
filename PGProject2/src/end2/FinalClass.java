@@ -50,8 +50,8 @@ public class FinalClass implements GLEventListener {
 	// auxiliares
 	static double[][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans, pontos2d;
-	static int resY = 640;
-	static int resX = 800;
+	static int resY = 1080;
+	static int resX = 1920;
 	static double[][] zbuffercamera = new double[resY][resX];
 	static double[][] zbufferluz = new double[resY][resX];
 	static double[][] matPixels = new double[resY][resX];
@@ -153,8 +153,13 @@ public class FinalClass implements GLEventListener {
 			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
 			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
 
-			pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (resX - 1);
-			pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (resY - 1);
+//			 pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (resX - 1);
+//			 pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (resY - 1);
+
+			matPointsInPixels[i][0] = (int) ((pontos2d[i][0] + 1) / 2 * resX + .5);
+			matPointsInPixels[i][1] = (int) (resY - ((pontos2d[i][1] + 1) / 2)
+					* resY + .5);
+
 		}
 		return pontos2d;
 	}
@@ -286,7 +291,9 @@ public class FinalClass implements GLEventListener {
 		}
 		return retorno;
 	}
-
+	//tamanho ideal camaro original zoom 10 - 8
+	//tamanho ideal camaro 2d zoom ideal .7 - 1
+	//tamanho ideal camaro 2d zoom ideal 1
 	private void render(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
@@ -295,7 +302,7 @@ public class FinalClass implements GLEventListener {
 			for (int k = 0; k < 3; k++) {
 				double[] a = pontos2d[triangulos[t][k] - 1];
 				gl.glColor3f(1, 1, 1);
-				double zoom = 900;
+				double zoom = 1;
 				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
 
 			}

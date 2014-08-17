@@ -137,30 +137,4 @@ public class Algeb {
 
 		return MatMud;
 	}
-
-	/*
-	 * public static Vetor sub(Vetor a, Vetor b) {// return a - b; Vetor resp =
-	 * new Vetor(a.getSize()); for (int i = 0; i < a.getSize(); i++) { resp[i] =
-	 * a[i] - b[i]; } return resp; }
-	 * 
-	 * public static Vetor soma(Vetor a, Vetor b) {// return a - b; Vetor resp =
-	 * new Vetor(a.getSize()); for (int i = 0; i < a.getSize(); i++) { resp[i] =
-	 * a[i] + b[i]; } return resp; } static double prodEscalar(Vetor a, Vetor b)
-	 * {// produto escalar a.b double resp = 0; for (int i = 0; i < a.getSize();
-	 * i++) { resp += a[i] * b[i]; } return resp; } public static Vetor
-	 * prodVetorial(Vetor a, Vetor b) { Vetor resp = new Vetor(3); resp[0] =
-	 * a[1] * b[2] - a[2] * b[1]; resp[1] = a[2] * b[0] - a[0] * b[2]; resp[2] =
-	 * a[0] * b[1] - a[1] * b[0]; return resp; } static Vetor projec(Vetor u,
-	 * Vetor v) { Vetor proj = new Vetor(u.size); double a = 0, b = 0, k; double
-	 * size = u.getSize(); // a = <v*u> | b = <u*u> for (int i = 0; i < size;
-	 * i++) { a = a + u[i] * v[i]; b = b + v[i] * v[i]; proj[i] = v[i]; }
-	 * 
-	 * k = a / b;
-	 * 
-	 * // proj = v | k*proj = k*v for (int i = 0; i < size; i++) { proj[i] = k *
-	 * proj[i]; }
-	 * 
-	 * return proj; }
-	 */
-
 }
