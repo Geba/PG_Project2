@@ -12,6 +12,7 @@ public class Algeb {
 		}
 		return soma;
 	}
+
 	public static double[] sub(double[] a, double[] b) {// subtrai 2 vetores
 
 		double[] sub = new double[a.length];
@@ -19,6 +20,15 @@ public class Algeb {
 			sub[i] = a[i] - b[i];
 		}
 		return sub;
+	}
+
+	static double distancia(double[] a, double[] b) {
+		double d = 0;
+		for(int i =0;i<a.length;i++){
+			d += (a[i] - b[i])*(a[i]-b[i]);
+		}
+		return Math.sqrt(d);
+		
 	}
 
 	static double prodEscalar(double[] a, double[] b) {// produto escalar a.b
@@ -60,12 +70,12 @@ public class Algeb {
 
 	public static double[] multMatrizVetor(double[][] M, double[] V) {
 		int aux;
-		double [] retorno  = new double[V.length];
-		for(int linha=0;linha<M.length;linha++){
-			for (int coluna=0;coluna<M[0].length;coluna++){
-				retorno[linha]+=M[linha][coluna]*V[coluna];
+		double[] retorno = new double[V.length];
+		for (int linha = 0; linha < M.length; linha++) {
+			for (int coluna = 0; coluna < M[0].length; coluna++) {
+				retorno[linha] += M[linha][coluna] * V[coluna];
 			}
-			
+
 		}
 		return retorno;
 	}
@@ -87,48 +97,47 @@ public class Algeb {
 		}
 		return v;
 	}
-	
-	public static String VectorToString(double[] v){
-		String retorno  = "";
-		for(int i =0;i<v.length; i++){
-			retorno  +=" " +v[i];
+
+	public static String VectorToString(double[] v) {
+		String retorno = "";
+		for (int i = 0; i < v.length; i++) {
+			retorno += " " + v[i];
 		}
 		return retorno;
 	}
-	
-	public static String MatrixToString(double[][] v){
-		String retorno  = "";
-		for(int linha=0;linha<v.length;linha++){
-			retorno="";
-			for(int coluna = 0;coluna<v[0].length;coluna++){
-				retorno +=retorno+v[linha][coluna]+" ";
+
+	public static String MatrixToString(double[][] v) {
+		String retorno = "";
+		for (int linha = 0; linha < v.length; linha++) {
+			retorno = "";
+			for (int coluna = 0; coluna < v[0].length; coluna++) {
+				retorno += retorno + v[linha][coluna] + " ";
 			}
-			//System.out.println(retorno);
+			// System.out.println(retorno);
 		}
-		
+
 		return retorno;
 	}
-	
-	//recebe a matriz de mudanca de base(MMB) e a matriz de pontos(MP)
-	//faz: [v]a = [M]a ^b * [v]b  Multiplica a MMB pela (MP) 
-	public static double[][] mudancaDeCoordenada(double[][] pontos, double[][] MM, double[] C){
+
+	// recebe a matriz de mudanca de base(MMB) e a matriz de pontos(MP)
+	// faz: [v]a = [M]a ^b * [v]b Multiplica a MMB pela (MP)
+	public static double[][] mudancaDeCoordenada(double[][] pontos,
+			double[][] MM, double[] C) {
 		double[] V = new double[3];
 		double[] R = new double[3];
 		double[][] MatMud = new double[pontos.length][3];
-				
+
 		for (int i = 0; i < pontos.length; i++) {
 			for (int j = 0; j < 3; j++) {
 				V[j] = pontos[i][j];
-			} 
-		 R = multMatrizVetor(MM, sub(V, C));
-		 MatMud[i]=R;
+			}
+			R = multMatrizVetor(MM, sub(V, C));
+			MatMud[i] = R;
 		}
-		
+
 		return MatMud;
 	}
-	
-	
-	
+
 	/*
 	 * public static Vetor sub(Vetor a, Vetor b) {// return a - b; Vetor resp =
 	 * new Vetor(a.getSize()); for (int i = 0; i < a.getSize(); i++) { resp[i] =

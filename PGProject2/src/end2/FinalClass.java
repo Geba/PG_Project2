@@ -13,17 +13,12 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 
-
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import end.Algb;
 
 public class FinalClass implements GLEventListener {
-
-	private double theta = 0;
-	private double s = 0;
-	private double c = 0;
 
 	// objetos
 	static int Np;
@@ -55,6 +50,12 @@ public class FinalClass implements GLEventListener {
 	// auxiliares
 	static double[][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans, pontos2d;
+	static int resY = 640;
+	static int resX = 800;
+	static double[][] zbuffercamera = new double[resY][resX];
+	static double[][] zbufferluz = new double[resY][resX];
+	static double[][] matPixels = new double[resY][resX];
+	static int[][] matPointsInPixels;
 
 	static void lerObjetos() {
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
@@ -64,6 +65,7 @@ public class FinalClass implements GLEventListener {
 		triangulos = new int[Nt][3];
 		pontosTrans = new double[Np][3];
 		pontos2d = new double[Np][2];
+		matPointsInPixels = new int[Np][2];
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
 				pontos[i][j] = arq.readDouble();
@@ -151,8 +153,8 @@ public class FinalClass implements GLEventListener {
 			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
 			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
 
-			pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (800 - 1);
-			pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (600 - 1);
+			pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (resX - 1);
+			pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (resY - 1);
 		}
 		return pontos2d;
 	}
@@ -229,7 +231,7 @@ public class FinalClass implements GLEventListener {
 		pontos2d = projetar2d(pontosTrans);
 
 		Frame frame = new Frame("AWT Window Test");
-		frame.setSize(300, 300);
+		frame.setSize(resX, resY);
 		frame.add(canvas);
 		frame.setVisible(true);
 
