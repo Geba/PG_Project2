@@ -19,12 +19,7 @@ public class Varredura {
 		posicaoInicio = ponto[0][0];
 		posicaoFim = ponto[0][0];
 		
-		
-		
-
-		
-		
-		for(int i=ponto[0][1]; i<=ponto[1][1];i++){
+				for(int i=ponto[0][1]; i<=ponto[1][1];i++){
 			posicaoInicio=posicaoInicio+inclinacaoP1P2;
 			posicaoFim=posicaoFim+inclinacaoP1P3;
 			int incremento = 1;

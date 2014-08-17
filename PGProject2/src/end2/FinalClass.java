@@ -17,8 +17,6 @@ import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
-
-
 public class FinalClass implements GLEventListener {
 
 	// objetos
@@ -49,37 +47,31 @@ public class FinalClass implements GLEventListener {
 	static double hy;
 
 	// auxiliares
+	static double[] zero = { 0.0, 0.0, 0.0 };
 	static double[][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans, pontos2d;
 
 	// Mapeamento da tela
-	static int resX = 800;
-	static int resY = 600;
+	static int resX = 640;
+	static int resY = 480;
 	static double[][] zbuffercamera = new double[resX][resY];
 	static double[][] zbufferluz = new double[resX][resY];
-	static int[][] matPointsInPixels;// [indice do ponto][{xdo pixel, y do
+	static double[][] matPointsInPixels;// [indice do ponto][{xdo pixel, y do
 										// pixel}]//equivalentes ao ponto
 	static float[][][] matCor = new float[resX][resY][3];// [x do pixel][y do
 															// pixel][{red,
 															// blue, green}]
 
-	
-	
-	
-	
-	public static double[][] projetar2d(double[][] pontos) {
-		double[][] pontos2d = new double[pontos.length][2];
-		for (int i = 0; i < pontos.length; i++) {
-			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
-			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
+	public static double[][] projetar2d(double[][] pontosTrans) {
+		double[][] pontos2d = new double[pontosTrans.length][2];
+		for (int i = 0; i < pontosTrans.length; i++) {
+			pontos2d[i][0] = (d / hx) * (pontosTrans[i][0] / pontosTrans[i][2]);
+			pontos2d[i][1] = (d / hy) * (pontosTrans[i][1] / pontosTrans[i][2]);
 
-			// pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (resX - 1);
-			// pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (resY - 1);
-
-			matPointsInPixels[i][0] = (int) ((pontos2d[i][0] + 1) / 2 * resX + .5);
-			matPointsInPixels[i][1] = (int) (resY - ((pontos2d[i][1] + 1) / 2)
-					* resY + .5);
-
+			matPointsInPixels[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
+			matPointsInPixels[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
+			// pontos2d[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
+			// pontos2d[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
 		}
 		return pontos2d;
 	}
@@ -98,6 +90,10 @@ public class FinalClass implements GLEventListener {
 			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
 													// triangulo
 			n = Algb.prodVetorial(v1, v2);
+			if (Algb.prodEscalar(C, n) > 0) {
+				n = Algb.sub(zero, n);
+			}
+
 			for (int j = 0; j <= 3; j++) {
 				NormTriangulos[i] = n;// salva a normal no array d normais de
 										// triangulo
@@ -130,15 +126,11 @@ public class FinalClass implements GLEventListener {
 	public static void main(String[] args) {
 
 		lerCamera();
-		// printCamera();
 		lerAtributos();
-		// printAtributos();
 		lerObjetos();
-		// printObjetos();
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
-		
 		V = Algb.sub(V, Algb.projec(V, N));
 		System.out.println("V = V-Proj(V,N): " + Algb.VectorToString(V));
 		U = Algb.prodVetorial(N, V);
@@ -178,6 +170,14 @@ public class FinalClass implements GLEventListener {
 		animator.start();
 	}
 
+	private static void printPontosTrans() {
+		for (int i = 0; i < Np; i++) {
+			System.out.println(pontosTrans[i][0] + " " + pontosTrans[i][1]
+					+ " " + pontosTrans[i][2]);
+		}
+
+	}
+
 	private static double[] getNewCoordinates(double[] pl2,
 			double[][] matrizMudBase2, double[] c2) {
 		pl2 = Algb.sub(pl2, c2);
@@ -186,14 +186,8 @@ public class FinalClass implements GLEventListener {
 	}
 
 	private static void teste() {
-		printNormals();
-
+		// printNormals();
 		double[][] pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
-		// System.out.println(pontosTrans.length);
-		for (int i = 0; i < pontosTrans.length; i++) {
-			// System.out.println(" "+Algeb.VectorToString(pontosTrans[i]));
-		}
-
 	}
 
 	private static double[][] getMudBase(double[] u, double[] v, double[] n) {
@@ -233,44 +227,53 @@ public class FinalClass implements GLEventListener {
 		gl.glLoadIdentity();
 		gl.glBegin(GL.GL_POINTS);
 		gl.glPointSize(40);
-		
-		for( float x =0;x<resX;x++){
-			for (float y = 0;y<resY;y++){
+
+		for (float x = 0; x < resX; x++) {
+			for (float y = 0; y < resY; y++) {
 				gl.glPointSize(6);
-				float red  =x/resX;
-				float green = y/resY;
-				float blue= red*green;
+				float red = x / resX;
+				float green = y / resY;
+				float blue = red * green;
+				matCor[(int) x][(int) y] = new float[] { red, green, blue };
 				gl.glColor3f(red, green, blue);
 				gl.glVertex2i((int) x, (int) y);
-				}
+			}
 		}
 		gl.glEnd();
-		
+
+		scanline();
+
 		gl.glBegin(GL.GL_POINTS);
-		for(int x = 0;x<resX;x++){
-			for(int y = 0; y<resY;y++){
-				gl.glColor3f(matCor[x][y][0],matCor[x][y][1],matCor[x][y][2]);
+		for (int x = 0; x < resX; x++) {
+			for (int y = 0; y < resY; y++) {
+				gl.glColor3f(matCor[x][y][0], matCor[x][y][1], matCor[x][y][2]);
 				gl.glVertex2i(x, y);
 			}
 		}
 		gl.glEnd();
-		
-//		for (int t = 0; t < Nt - 1; t++) {
-//			gl.glBegin(GL.GL_POINTS);
-//			for (int k = 0; k < 3; k++) {
-//				int[] a = matPointsInPixels[triangulos[t][k]];
-//				gl.glColor3f(1, 1, 1);
-//				double zoom = 10;
-//				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
-//				//System.out.println(a[0]);
-//
-//			}
-//			gl.glEnd();
-//
-//		}
-//		
-		
-		
+
+		gl.glBegin(GL.GL_POINTS);
+		for (int i = 0; i < pontos2d.length; i++) {
+			gl.glColor3f(1, 1, 1);
+			gl.glVertex2d(matPointsInPixels[i][0], matPointsInPixels[i][1]);
+
+		}
+		gl.glEnd();
+
+		// for (int t = 0; t < Nt - 1; t++) {
+		// gl.glBegin(GL.GL_POINTS);
+		// for (int k = 0; k < 3; k++) {
+		// int[] a = matPointsInPixels[triangulos[t][k]];
+		// gl.glColor3f(1, 1, 1);
+		// double zoom = 10;
+		// gl.glVertex2d(a[0] / zoom, a[1] / zoom);
+		// //System.out.println(a[0]);
+		//
+		//
+		// gl.glEnd();
+		//
+		// }
+		//
 
 	}
 
@@ -279,7 +282,6 @@ public class FinalClass implements GLEventListener {
 		update();
 		render(drawable);
 	}
-	
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
@@ -308,66 +310,104 @@ public class FinalClass implements GLEventListener {
 		return new double[] { u, v, w };
 	}
 
-	public void Varrer(int[][] ponto) {
+	public void scanline() {
+		for (int t = 0; t < Nt; t++) {// para cada triangulo
+			double[] p1 = matPointsInPixels[triangulos[t][0]];// pegue o x e o y
+																// de seus
+																// vertices, na
+																// tela
+			double[] p2 = matPointsInPixels[triangulos[t][1]];
+			double[] p3 = matPointsInPixels[triangulos[t][2]];
+			double[][] tnatela = { p1, p2, p3 };
+			Varrer(tnatela, triangulos[t]);
+			// System.out.println("oi");
+		}
+	}
+
+	public void Varrer(double[][] pontosNatela, int[] indicepontos) {
+
 		// yMedia: Valor do y que tem o valor intermediário dos três pontos
 
-		// tratar casos de divisao por zero
-		int inclinacaoP1P2, inclinacaoP1P3, inclinacaoP2P3;
-		if (ponto[0][0] - ponto[1][0] == 0) {
+		double inclinacaoP1P2;
+		double inclinacaoP1P3;
+		double inclinacaoP2P3;
+		if (pontosNatela[0][0] - pontosNatela[1][0] == 0) {
 			inclinacaoP1P2 = 0;
 		} else {
-			inclinacaoP1P2 = (ponto[0][1] - ponto[1][1])
-					/ (ponto[0][0] - ponto[1][0]);
+			inclinacaoP1P2 = (pontosNatela[0][1] - pontosNatela[1][1])
+					/ (pontosNatela[0][0] - pontosNatela[1][0]);
 		}
 
-		if (ponto[0][0] - ponto[2][0] == 0) {
+		if (pontosNatela[0][0] - pontosNatela[2][0] == 0) {
 			inclinacaoP1P3 = 0;
 		} else {
-			inclinacaoP1P3 = (ponto[0][1] - ponto[2][1])
-					/ (ponto[0][0] - ponto[2][0]);
+			inclinacaoP1P3 = (pontosNatela[0][1] - pontosNatela[2][1])
+					/ (pontosNatela[0][0] - pontosNatela[2][0]);
 		}
-		if (ponto[1][0] - ponto[2][0] == 0) {
+		if (pontosNatela[1][0] - pontosNatela[2][0] == 0) {
 			inclinacaoP2P3 = 0;
 		} else {
-			inclinacaoP2P3 = (ponto[1][1] - ponto[2][1])
-					/ (ponto[1][0] - ponto[2][0]);
+			inclinacaoP2P3 = (pontosNatela[1][1] - pontosNatela[2][1])
+					/ (pontosNatela[1][0] - pontosNatela[2][0]);
 		}
-		// dividir o triangulo em dois triangulos
-		int posicaoInicio = ponto[0][0], posicaoAtualY = ponto[0][1], posicaoFim;
-		posicaoInicio = ponto[0][0];
-		posicaoFim = ponto[0][0];
+		double posicaoInicio = pontosNatela[0][0];
+		double posicaoAtualY = pontosNatela[0][1];
+		double posicaoFim;
+		posicaoInicio = pontosNatela[0][0];
+		posicaoFim = pontosNatela[0][0];
+
 		// varre o primeiro triangulo
-		for (int i = ponto[0][1]; i <= ponto[1][1]; i++) {
+		for (double y = pontosNatela[0][1]; y <= pontosNatela[1][1]; y++) {
 			posicaoInicio = posicaoInicio + inclinacaoP1P2;
 			posicaoFim = posicaoFim + inclinacaoP1P3;
 			int incremento = 1;
 			if (posicaoFim < posicaoInicio)
 				incremento *= -1;
-			for (int j = posicaoInicio; j <= posicaoFim; j += incremento) {
-				matCor[i][j][0] = 1;matCor[i][j][1] = 1;matCor[i][j][2] = 1;
-				
-				
-				
-				
-				
-				
-				
+			if (y > 0 && y < resY - 1) {
+				for (double x = posicaoInicio; x <= posicaoFim; x += incremento) {
+					// encontrar as coordenadas baricentricas para o triangulo
+					if (x >= 0 && x < resX - 1) {
+						double[] baricentricas = coefsBaricentricos(
+								new double[] { x, y }, pontosNatela[0],
+								pontosNatela[1], pontosNatela[2]);
+						// atualizar a matriz z-buffer, caso seja necassario
+						double zaprox = 0;
+						for (int i = 0; i < 3; i++) {
+							zaprox += pontos[indicepontos[i]][2];
+						}
+
+						if (zaprox < zbuffercamera[(int) x][(int) y]) {
+							doPhong();
+							matCor[(int) x][(int) y] = new float[] { 1, 1, 1 };
+						}
+
+						// aplicar phong,atualizando a matriz de cores, caso
+						// seja
+						// necessario(caso tenha atualizado o z-buffer)
+					}
+				}
 			}
 		}
 		// varre no segundo triangulo
-		for (int i = ponto[1][1]; i < ponto[2][1]; i++) {
+		for (int i = (int) pontosNatela[1][1]; i < pontosNatela[2][1]; i++) {
 			posicaoInicio = posicaoInicio + inclinacaoP2P3;
 			posicaoFim = posicaoFim + inclinacaoP1P3;
 			int incremento = 1;
 			if (posicaoFim < posicaoInicio)
 				incremento *= -1;
-			for (int j = posicaoInicio; j <= posicaoFim; j += incremento) {
+			for (double j = posicaoInicio; j <= posicaoFim; j += incremento) {
 
 			}
 		}
 		// acha o ponto que intersecta as retas com maior e menor y
 
 	}
+
+	private void doPhong() {
+		// TODO Auto-generated method stub
+
+	}
+
 	static void lerObjetos() {
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
 		Np = arq.readInt();
@@ -376,7 +416,7 @@ public class FinalClass implements GLEventListener {
 		triangulos = new int[Nt][3];
 		pontosTrans = new double[Np][3];
 		pontos2d = new double[Np][2];
-		matPointsInPixels = new int[Np][2];
+		matPointsInPixels = new double[Np][2];
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
 				pontos[i][j] = arq.readDouble();
