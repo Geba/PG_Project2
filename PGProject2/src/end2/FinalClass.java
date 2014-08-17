@@ -44,20 +44,23 @@ public class FinalClass implements GLEventListener {
 	static double[] U = new double[3];
 	static double[] V1 = new double[3];
 	static double d;
-	static double hx; 
-	static double hy; 
+	static double hx;
+	static double hy;
 
 	// auxiliares
 	static double[][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans, pontos2d;
-	
-	//Mapeamento da tela
+
+	// Mapeamento da tela
 	static int resX = 800;
 	static int resY = 600;
 	static double[][] zbuffercamera = new double[resX][resY];
 	static double[][] zbufferluz = new double[resX][resY];
-	static int[][] matPointsInPixels;//[indice do ponto][{xdo pixel, y do pixel}]//equivalentes ao ponto
-	static double[][][] matCor = new double[resX][resY][3];//[x do pixel][y do pixel][{red, blue, green}]
+	static int[][] matPointsInPixels;// [indice do ponto][{xdo pixel, y do
+										// pixel}]//equivalentes ao ponto
+	static double[][][] matCor = new double[resX][resY][3];// [x do pixel][y do
+															// pixel][{red,
+															// blue, green}]
 
 	static void lerObjetos() {
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
@@ -75,8 +78,18 @@ public class FinalClass implements GLEventListener {
 		}
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-				triangulos[i][j] = arq.readInt();
+				triangulos[i][j] = arq.readInt() - 1;
 			}
+		}
+	}
+
+	static void printNormals() {
+
+		for (int i = 0; i < NormTriangulos.length; i++) {
+			for (int j = 0; j < 3; j++) {
+				System.out.print(NormTriangulos[i][j] + " ");
+			}
+			System.out.println();
 		}
 	}
 
@@ -84,25 +97,25 @@ public class FinalClass implements GLEventListener {
 		System.out.println("Np: " + Np + " Nt: " + Np);
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
-			 System.out.print(pontos[i][j] + " ");
+				System.out.print(pontos[i][j] + " ");
 			}
 		}
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-			 System.out.println(triangulos[i][j] + " ");
+				System.out.println(triangulos[i][j] + " ");
 			}
 		}
 	}
 
 	static void printAtributos() {
-		 System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
-		 System.out.println("Ka: " + Ka);
-		 System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
-		 System.out.println("Kd: " + Kd);
-		 System.out.println("Ks: " + Ks);
-		 System.out.println("n: " + n);
-		 System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
-		 System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
+		System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
+		System.out.println("Ka: " + Ka);
+		System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
+		System.out.println("Kd: " + Kd);
+		System.out.println("Ks: " + Ks);
+		System.out.println("n: " + n);
+		System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
+		System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
 	}
 
 	static void lerAtributos() {
@@ -143,10 +156,10 @@ public class FinalClass implements GLEventListener {
 	}
 
 	static void printCamera() {
-		 System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
-		 System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
-		 System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
-		 System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
+		System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
+		System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
+		System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
+		System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
 	}
 
 	public static double[][] projetar2d(double[][] pontos) {
@@ -167,7 +180,9 @@ public class FinalClass implements GLEventListener {
 	}
 
 	static void calcularNormais() {
-		for (int i = 0; i <= triangulos.length; i++) {
+		NormTriangulos = new double[Nt][3];
+		NormPontos = new double[Np][3];
+		for (int i = 0; i < triangulos.length; i++) {
 			double[] v1, v2, n;
 			int pA, pB, pC;
 			pA = triangulos[i][0];
@@ -187,7 +202,7 @@ public class FinalClass implements GLEventListener {
 				NormPontos[pB] = Algeb.soma(NormPontos[pA], n);
 				NormPontos[pC] = Algeb.soma(NormPontos[pA], n);
 			}
-
+			// System.out.println(i);
 		}
 		for (int i = 0; i < NormPontos.length; i++) {
 			NormPontos[i] = Algeb.normalize(NormPontos[i]);
@@ -211,11 +226,11 @@ public class FinalClass implements GLEventListener {
 	public static void main(String[] args) {
 
 		lerCamera();
-		printCamera();
+		// printCamera();
 		lerAtributos();
-		printAtributos();
+		// printAtributos();
 		lerObjetos();
-		printObjetos();
+		// printObjetos();
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
@@ -231,6 +246,7 @@ public class FinalClass implements GLEventListener {
 		N = Algb.normalize(N);
 
 		matrizMudBase = getMudBase(U, V, N);
+		calcularNormais();
 		pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
 		Pl = getNewCoordinates(Pl, matrizMudBase, C);
 		// ok até aqui
@@ -265,10 +281,7 @@ public class FinalClass implements GLEventListener {
 	}
 
 	private static void teste() {
-		double tes[][] = { { 1, 2, 7 }, { 8, 1, 2 }, { 2, 0, 4 } };
-		double v[] = { 1, 3, -4 };
-		// System.out.println(Algeb.VectorToString(Algeb.multMatrizVetor(tes,
-		// v)));
+		printNormals();
 
 		double[][] pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
 		// System.out.println(pontosTrans.length);
@@ -296,7 +309,7 @@ public class FinalClass implements GLEventListener {
 			ponto = Algeb.sub(ponto, camera);
 			// System.out.println(Algeb.VectorToString(ponto));
 			ponto = Algeb.multMatrizVetor(mudBase, ponto);
-			System.out.println(ponto[0]);
+			// System.out.println(ponto[0]);
 			retorno[i] = ponto;
 		}
 		return retorno;
@@ -311,7 +324,7 @@ public class FinalClass implements GLEventListener {
 		for (int t = 0; t < Nt - 1; t++) {
 			gl.glBegin(GL.GL_LINE_LOOP);
 			for (int k = 0; k < 3; k++) {
-				double[] a = pontos2d[triangulos[t][k] - 1];
+				double[] a = pontos2d[triangulos[t][k]];
 				gl.glColor3f(1, 1, 1);
 				double zoom = 1;
 				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
@@ -356,42 +369,45 @@ public class FinalClass implements GLEventListener {
 		return new double[] { u, v, w };
 	}
 
-	public void Varrer(int[][] ponto){
-		//yMedia: Valor do y que tem o valor intermediário dos três pontos
-	
-		
-		//tratar casos de divisao por zero
+	public void Varrer(int[][] ponto) {
+		// yMedia: Valor do y que tem o valor intermediário dos três pontos
+
+		// tratar casos de divisao por zero
 		int inclinacaoP1P2, inclinacaoP1P3, inclinacaoP2P3;
-		inclinacaoP1P2 = (ponto[0][1]-ponto[1][1])/ponto[0][0]-ponto[1][0];
-		inclinacaoP1P3 = (ponto[0][1]-ponto[2][1])/ponto[0][0]-ponto[2][0];
-		inclinacaoP2P3 = (ponto[1][1]-ponto[2][1])/ponto[1][0]-ponto[2][0];
-		//dividir o triangulo em dois triangulos
-		int posicaoInicio = ponto[0][0],posicaoAtualY=ponto[0][1],posicaoFim;
+		inclinacaoP1P2 = (ponto[0][1] - ponto[1][1]) / ponto[0][0]
+				- ponto[1][0];
+		inclinacaoP1P3 = (ponto[0][1] - ponto[2][1]) / ponto[0][0]
+				- ponto[2][0];
+		inclinacaoP2P3 = (ponto[1][1] - ponto[2][1]) / ponto[1][0]
+				- ponto[2][0];
+		// dividir o triangulo em dois triangulos
+		int posicaoInicio = ponto[0][0], posicaoAtualY = ponto[0][1], posicaoFim;
 		posicaoInicio = ponto[0][0];
 		posicaoFim = ponto[0][0];
-	//varre o primeiro triangulo
-		for(int i=ponto[0][1]; i<=ponto[1][1];i++){
-			posicaoInicio=posicaoInicio+inclinacaoP1P2;
-			posicaoFim=posicaoFim+inclinacaoP1P3;
+		// varre o primeiro triangulo
+		for (int i = ponto[0][1]; i <= ponto[1][1]; i++) {
+			posicaoInicio = posicaoInicio + inclinacaoP1P2;
+			posicaoFim = posicaoFim + inclinacaoP1P3;
 			int incremento = 1;
-			if(posicaoFim<posicaoInicio) incremento*=-1;
-			for(int j = posicaoInicio; j<=posicaoFim; j+=incremento){
-								
+			if (posicaoFim < posicaoInicio)
+				incremento *= -1;
+			for (int j = posicaoInicio; j <= posicaoFim; j += incremento) {
+
 			}
 		}
-		//varre no segundo triangulo
-		for(int i=ponto[1][1]; i<ponto[2][1];i++){
-			posicaoInicio=posicaoInicio+inclinacaoP2P3;
-			posicaoFim=posicaoFim+inclinacaoP1P3;
+		// varre no segundo triangulo
+		for (int i = ponto[1][1]; i < ponto[2][1]; i++) {
+			posicaoInicio = posicaoInicio + inclinacaoP2P3;
+			posicaoFim = posicaoFim + inclinacaoP1P3;
 			int incremento = 1;
-			if(posicaoFim<posicaoInicio) incremento*=-1;
-			for(int j = posicaoInicio; j<=posicaoFim; j+=incremento){
-								
+			if (posicaoFim < posicaoInicio)
+				incremento *= -1;
+			for (int j = posicaoInicio; j <= posicaoFim; j += incremento) {
+
 			}
 		}
-		//acha o ponto que intersecta as retas com maior e menor y
-		
+		// acha o ponto que intersecta as retas com maior e menor y
+
 	}
-	
-	
+
 }

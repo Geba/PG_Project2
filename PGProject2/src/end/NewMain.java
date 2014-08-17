@@ -243,7 +243,7 @@ public class NewMain {
 		menosPphong = Algb.sub(zero, Pphong);  
 		Vphong = Algb.normalize(menosPphong);
 
-		int Ilum = Ia + Ie + (Algb.prodEscalar(Lphong, Nphong)*Algb.prodEscalar(Od, Il)* Kd);
+		//int Ilum = Ia + Ie + (Algb.prodEscalar(Lphong, Nphong)*Algb.prodEscalar(Od, Il)* Kd);
 		
 	}
 }
