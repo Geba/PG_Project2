@@ -50,8 +50,8 @@ public class FinalClass implements GLEventListener {
 	// auxiliares
 	static double[][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans, pontos2d;
-	static int resY = 1080;
-	static int resX = 1920;
+	static int resX = 800;
+	static int resY = 600;
 	static double[][] zbuffercamera = new double[resY][resX];
 	static double[][] zbufferluz = new double[resY][resX];
 	static double[][] matPixels = new double[resY][resX];
