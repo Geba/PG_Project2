@@ -44,18 +44,20 @@ public class FinalClass implements GLEventListener {
 	static double[] U = new double[3];
 	static double[] V1 = new double[3];
 	static double d;
-	static double hx; // coloquei double p n�o ter surpresa
-	static double hy; // coloquei double p n�o ter surpresa
+	static double hx; 
+	static double hy; 
 
 	// auxiliares
 	static double[][] matrizMudBase = new double[V.length][V.length];
 	static double[][] pontosTrans, pontos2d;
+	
+	//Mapeamento da tela
 	static int resX = 800;
 	static int resY = 600;
-	static double[][] zbuffercamera = new double[resY][resX];
-	static double[][] zbufferluz = new double[resY][resX];
-	static double[][][] matCor = new double[resY][resX][3];
-	static int[][] matPointsInPixels;
+	static double[][] zbuffercamera = new double[resX][resY];
+	static double[][] zbufferluz = new double[resX][resY];
+	static int[][] matPointsInPixels;//[indice do ponto][{xdo pixel, y do pixel}]//equivalentes ao ponto
+	static double[][][] matCor = new double[resX][resY][3];//[x do pixel][y do pixel][{red, blue, green}]
 
 	static void lerObjetos() {
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
