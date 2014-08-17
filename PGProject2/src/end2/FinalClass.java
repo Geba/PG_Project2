@@ -64,6 +64,9 @@ public class FinalClass implements GLEventListener {
 															// blue, green}]
 
 	
+	
+	
+	
 	public static double[][] projetar2d(double[][] pontos) {
 		double[][] pontos2d = new double[pontos.length][2];
 		for (int i = 0; i < pontos.length; i++) {
@@ -90,7 +93,6 @@ public class FinalClass implements GLEventListener {
 			pA = triangulos[i][0];
 			pB = triangulos[i][1];
 			pC = triangulos[i][2];
-
 			// descobrir quais vetores pegar aqui
 			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
 			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
@@ -266,7 +268,7 @@ public class FinalClass implements GLEventListener {
 //			gl.glEnd();
 //
 //		}
-		
+//		
 		
 		
 
@@ -342,7 +344,14 @@ public class FinalClass implements GLEventListener {
 			if (posicaoFim < posicaoInicio)
 				incremento *= -1;
 			for (int j = posicaoInicio; j <= posicaoFim; j += incremento) {
-
+				matCor[i][j][0] = 1;matCor[i][j][1] = 1;matCor[i][j][2] = 1;
+				
+				
+				
+				
+				
+				
+				
 			}
 		}
 		// varre no segundo triangulo
