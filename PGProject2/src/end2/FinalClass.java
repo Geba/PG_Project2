@@ -17,7 +17,7 @@ import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
-import end.Algb;
+import end.Algbantigo;
 
 public class FinalClass implements GLEventListener {
 
@@ -191,22 +191,22 @@ public class FinalClass implements GLEventListener {
 			pC = triangulos[i][2];
 
 			// descobrir quais vetores pegar aqui
-			v1 = Algeb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
-			v2 = Algeb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
+			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
+			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
 													// triangulo
-			n = Algeb.prodVetorial(v1, v2);
+			n = Algb.prodVetorial(v1, v2);
 			for (int j = 0; j <= 3; j++) {
 				NormTriangulos[i] = n;// salva a normal no array d normais de
 										// triangulo
 				// soma essa normal no array de normal de vertices
-				NormPontos[pA] = Algeb.soma(NormPontos[pA], n);
-				NormPontos[pB] = Algeb.soma(NormPontos[pA], n);
-				NormPontos[pC] = Algeb.soma(NormPontos[pA], n);
+				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
 			}
 			// System.out.println(i);
 		}
 		for (int i = 0; i < NormPontos.length; i++) {
-			NormPontos[i] = Algeb.normalize(NormPontos[i]);
+			NormPontos[i] = Algb.normalize(NormPontos[i]);
 		}
 
 	}
@@ -236,16 +236,16 @@ public class FinalClass implements GLEventListener {
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
 		
-		V = Algb.sub(V, Algb.projec(V, N));
-		System.out.println("V = V-Proj(V,N): " + Algb.VectorToString(V));
-		U = Algb.prodVetorial(N, V);
-		System.out.println("NxV: " + Algb.VectorToString(U));
+		V = Algbantigo.sub(V, Algbantigo.projec(V, N));
+		System.out.println("V = V-Proj(V,N): " + Algbantigo.VectorToString(V));
+		U = Algbantigo.prodVetorial(N, V);
+		System.out.println("NxV: " + Algbantigo.VectorToString(U));
 
 		// normalizando
 
-		U = Algb.normalize(U);
-		V = Algb.normalize(V);
-		N = Algb.normalize(N);
+		U = Algbantigo.normalize(U);
+		V = Algbantigo.normalize(V);
+		N = Algbantigo.normalize(N);
 
 		matrizMudBase = getMudBase(U, V, N);
 		calcularNormais();
@@ -277,8 +277,8 @@ public class FinalClass implements GLEventListener {
 
 	private static double[] getNewCoordinates(double[] pl2,
 			double[][] matrizMudBase2, double[] c2) {
-		pl2 = Algeb.sub(pl2, c2);
-		pl2 = Algeb.multMatrizVetor(matrizMudBase2, pl2);
+		pl2 = Algb.sub(pl2, c2);
+		pl2 = Algb.multMatrizVetor(matrizMudBase2, pl2);
 		return pl2;
 	}
 
@@ -308,9 +308,9 @@ public class FinalClass implements GLEventListener {
 		double[][] retorno = new double[pontos.length][3];
 		for (int i = 0; i < pontos.length; i++) {
 			double[] ponto = pontos[i];
-			ponto = Algeb.sub(ponto, camera);
+			ponto = Algb.sub(ponto, camera);
 			// System.out.println(Algeb.VectorToString(ponto));
-			ponto = Algeb.multMatrizVetor(mudBase, ponto);
+			ponto = Algb.multMatrizVetor(mudBase, ponto);
 			// System.out.println(ponto[0]);
 			retorno[i] = ponto;
 		}
@@ -330,7 +330,7 @@ public class FinalClass implements GLEventListener {
 		gl.glLoadIdentity();
 		gl.glBegin(GL.GL_POINTS);
 		gl.glPointSize(40);
-		float a = resX, b=resY;
+		
 		for( float x =0;x<resX;x++){
 			for (float y = 0;y<resY;y++){
 				gl.glPointSize(6);
@@ -348,19 +348,19 @@ public class FinalClass implements GLEventListener {
 		
 		
 		
-//		for (int t = 0; t < Nt - 1; t++) {
-//			gl.glBegin(GL.GL_LINE_LOOP);
-//			for (int k = 0; k < 3; k++) {
-//				double[] a = pontosTrans[triangulos[t][k]];
-//				gl.glColor3f(1, 1, 1);
-//				double zoom = 10;
-//				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
-//				System.out.println(a[0]);
-//
-//			}
-//			gl.glEnd();
-//
-//		}
+		for (int t = 0; t < Nt - 1; t++) {
+			gl.glBegin(GL.GL_POINTS);
+			for (int k = 0; k < 3; k++) {
+				int[] a = matPointsInPixels[triangulos[t][k]];
+				gl.glColor3f(1, 1, 1);
+				double zoom = 10;
+				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
+				//System.out.println(a[0]);
+
+			}
+			gl.glEnd();
+
+		}
 
 	}
 

@@ -1,6 +1,6 @@
 package end2;
 
-public class Algeb {
+public class Algb {
 
 	// OPERACOES COM VETORES
 

@@ -136,25 +136,25 @@ public class Main {
 			pC = triangulos[i][2];
 
 			// descobrir quais vetores pegar aqui
-			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
-			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
+			v1 = Algbantigo.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
+			v2 = Algbantigo.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
 			// triangulo
-			n = Algb.prodVetorial(v1, v2);
-			if(Algb.prodEscalar(C, n) > 0){
-				n = Algb.sub(zero, n);
+			n = Algbantigo.prodVetorial(v1, v2);
+			if(Algbantigo.prodEscalar(C, n) > 0){
+				n = Algbantigo.sub(zero, n);
 			}
 			
 			for (int j = 0; j <= 3; j++) {
 				NormaTriangulos[i] = n;//salva a normal no array d normais de triangulo
 				//soma essa normal no array de normal de vertices
-				NormaPontos[pA] = Algb.soma(NormaPontos[pA], n);
-				NormaPontos[pB] = Algb.soma(NormaPontos[pA], n);
-				NormaPontos[pC] = Algb.soma(NormaPontos[pA], n);
+				NormaPontos[pA] = Algbantigo.soma(NormaPontos[pA], n);
+				NormaPontos[pB] = Algbantigo.soma(NormaPontos[pA], n);
+				NormaPontos[pC] = Algbantigo.soma(NormaPontos[pA], n);
 			}
 
 		}
 		for(int i=0;i<NormaPontos.length;i++){
-			NormaPontos[i] = Algb.normalize(NormaPontos[i]);
+			NormaPontos[i] = Algbantigo.normalize(NormaPontos[i]);
 		}
 
 	}
@@ -199,19 +199,19 @@ public class Main {
 		//transpor ele por sendo ortornomal M^-1 = M^t
 
 		//descobrindo U que é o produto vetorial de N e V
-		V = Algb.sub(V, Algb.projec(V, N));
-		System.out.println("V = V-Proj(V,N): "+Algb.VectorToString(V));
-		U = Algb.prodVetorial(N,  V);
-		System.out.println("NxV: "+ Algb.VectorToString(U));
+		V = Algbantigo.sub(V, Algbantigo.projec(V, N));
+		System.out.println("V = V-Proj(V,N): "+Algbantigo.VectorToString(V));
+		U = Algbantigo.prodVetorial(N,  V);
+		System.out.println("NxV: "+ Algbantigo.VectorToString(U));
 
 		//normalizando
-		U =Algb.normalize(U);
-		V = Algb.normalize(V);
-		N = Algb.normalize(N);
+		U =Algbantigo.normalize(U);
+		V = Algbantigo.normalize(V);
+		N = Algbantigo.normalize(N);
 
-		System.out.println("V: "+Algb.VectorToString(V));
-		System.out.println("U: "+Algb.VectorToString(U));
-		System.out.println("N: "+Algb.VectorToString(N));
+		System.out.println("V: "+Algbantigo.VectorToString(V));
+		System.out.println("U: "+Algbantigo.VectorToString(U));
+		System.out.println("N: "+Algbantigo.VectorToString(N));
 
 		//Matriz de mudança de coordenada de camera
 
@@ -222,8 +222,8 @@ public class Main {
 		}
 
 		//Mudança de base de todos os pontos e da posicao da fonte de luz Pl
-		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase, C);
-		Pl = Algb.multMatrizVetor(matrizMudBase, Pl);
+		pontosTrans = Algbantigo.mudancaDeCoordenada(pontos, matrizMudBase, C);
+		Pl = Algbantigo.multMatrizVetor(matrizMudBase, Pl);
 
 		//projetando os pontos na tela
 		 GLProfile glprofile = GLProfile.getDefault();

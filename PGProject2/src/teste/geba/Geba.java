@@ -16,7 +16,7 @@ import javax.media.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
-import end.Algb;
+import end.Algbantigo;
 import end.Arquivo;
 
 public class Geba implements GLEventListener {
@@ -165,22 +165,22 @@ public class Geba implements GLEventListener {
 			pC = triangulos[i][2];
 
 			// descobrir quais vetores pegar aqui
-			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
-			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
+			v1 = Algbantigo.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
+			v2 = Algbantigo.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
 													// triangulo
-			n = Algb.prodVetorial(v1, v2);
+			n = Algbantigo.prodVetorial(v1, v2);
 			for (int j = 0; j <= 3; j++) {
 				NormTriangulos[i] = n;// salva a normal no array d normais de
 										// triangulo
 				// soma essa normal no array de normal de vertices
-				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pA] = Algbantigo.soma(NormPontos[pA], n);
+				NormPontos[pB] = Algbantigo.soma(NormPontos[pA], n);
+				NormPontos[pC] = Algbantigo.soma(NormPontos[pA], n);
 			}
 
 		}
 		for (int i = 0; i < NormPontos.length; i++) {
-			NormPontos[i] = Algb.normalize(NormPontos[i]);
+			NormPontos[i] = Algbantigo.normalize(NormPontos[i]);
 		}
 
 	}
@@ -214,7 +214,7 @@ public class Geba implements GLEventListener {
 			matrizMudBase[1][i] = V[i];
 			matrizMudBase[2][i] = N[i];
 		}
-		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase, C);
+		pontosTrans = Algbantigo.mudancaDeCoordenada(pontos, matrizMudBase, C);
 		pontos2d = projetar2d(pontosTrans);
 		
 		

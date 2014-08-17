@@ -138,22 +138,22 @@ public class NewMain {
 			pC = triangulos[i][2];
 
 			// descobrir quais vetores pegar aqui
-			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
-			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
+			v1 = Algbantigo.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
+			v2 = Algbantigo.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
 			// triangulo
-			n = Algb.prodVetorial(v1, v2);
+			n = Algbantigo.prodVetorial(v1, v2);
 			for (int j = 0; j <= 3; j++) {
 				NormTriangulos[i] = n;// salva a normal no array d normais de
 				// triangulo
 				// soma essa normal no array de normal de vertices
-				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
+				NormPontos[pA] = Algbantigo.soma(NormPontos[pA], n);
+				NormPontos[pB] = Algbantigo.soma(NormPontos[pA], n);
+				NormPontos[pC] = Algbantigo.soma(NormPontos[pA], n);
 			}
 
 		}
 		for (int i = 0; i < NormPontos.length; i++) {
-			NormPontos[i] = Algb.normalize(NormPontos[i]);
+			NormPontos[i] = Algbantigo.normalize(NormPontos[i]);
 		}
 
 	}
@@ -199,20 +199,20 @@ public class NewMain {
 		// transpor ele por sendo ortornomal M^-1 = M^t
 
 		// descobrindo U que é o produto vetorial de N e V
-		V = Algb.sub(V, Algb.projec(V, N));
-		System.out.println("V = V-Proj(V,N): " + Algb.VectorToString(V));
-		U = Algb.prodVetorial(N, V);
-		System.out.println("NxV: " + Algb.VectorToString(U));
+		V = Algbantigo.sub(V, Algbantigo.projec(V, N));
+		System.out.println("V = V-Proj(V,N): " + Algbantigo.VectorToString(V));
+		U = Algbantigo.prodVetorial(N, V);
+		System.out.println("NxV: " + Algbantigo.VectorToString(U));
 
 		// normalizando
 
-		U = Algb.normalize(U);
-		V = Algb.normalize(V);
-		N = Algb.normalize(N);
+		U = Algbantigo.normalize(U);
+		V = Algbantigo.normalize(V);
+		N = Algbantigo.normalize(N);
 
-		System.out.println("V: " + Algb.VectorToString(V));
-		System.out.println("U: " + Algb.VectorToString(U));
-		System.out.println("N: " + Algb.VectorToString(N));
+		System.out.println("V: " + Algbantigo.VectorToString(V));
+		System.out.println("U: " + Algbantigo.VectorToString(U));
+		System.out.println("N: " + Algbantigo.VectorToString(N));
 
 		// Matriz de mudança de coordenada de camera
 
@@ -223,14 +223,14 @@ public class NewMain {
 		}
 
 		// Mudança de base de todos os pontos e da posicao da fonte de luz Pl
-		pontosTrans = Algb.mudancaDeCoordenada(pontos, matrizMudBase, C);
+		pontosTrans = Algbantigo.mudancaDeCoordenada(pontos, matrizMudBase, C);
 		System.out.println(pontosTrans.length + " "
-				+ Algb.VectorToString(pontosTrans[0]));
+				+ Algbantigo.VectorToString(pontosTrans[0]));
 
 		pontos2d = projetar2d(pontosTrans);
-		System.out.println(Algb.VectorToString(pontos2d[0]));
+		System.out.println(Algbantigo.VectorToString(pontos2d[0]));
 
-		Pl = Algb.multMatrizVetor(matrizMudBase, Pl);
+		Pl = Algbantigo.multMatrizVetor(matrizMudBase, Pl);
 
 		// projetando os pontos na tela
 
@@ -239,9 +239,9 @@ public class NewMain {
 		//aqui eu preciso da coordenada baricêntrica das normais de um ponto;
 		//variavel global Pphong criada para ser o ponto de entrada
 		//variavel global Nphong criada para ser resultado da coordenada Baricentrica das normais de um ponto;
-		Lphong = Algb.normalize(Algb.sub(Pl, Pphong));
-		menosPphong = Algb.sub(zero, Pphong);  
-		Vphong = Algb.normalize(menosPphong);
+		Lphong = Algbantigo.normalize(Algbantigo.sub(Pl, Pphong));
+		menosPphong = Algbantigo.sub(zero, Pphong);  
+		Vphong = Algbantigo.normalize(menosPphong);
 
 		//int Ilum = Ia + Ie + (Algb.prodEscalar(Lphong, Nphong)*Algb.prodEscalar(Od, Il)* Kd);
 		

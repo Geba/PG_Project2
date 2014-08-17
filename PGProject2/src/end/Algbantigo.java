@@ -1,6 +1,6 @@
 package end;
 
-public class Algb {
+public class Algbantigo {
 
 	// OPERACOES COM VETORES
 
