@@ -12,6 +12,7 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
@@ -234,6 +235,7 @@ public class FinalClass implements GLEventListener {
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
+		
 		V = Algb.sub(V, Algb.projec(V, N));
 		System.out.println("V = V-Proj(V,N): " + Algb.VectorToString(V));
 		U = Algb.prodVetorial(N, V);
@@ -321,18 +323,44 @@ public class FinalClass implements GLEventListener {
 	private void render(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		for (int t = 0; t < Nt - 1; t++) {
-			gl.glBegin(GL.GL_LINE_LOOP);
-			for (int k = 0; k < 3; k++) {
-				double[] a = pontos2d[triangulos[t][k]];
-				gl.glColor3f(1, 1, 1);
-				double zoom = 1;
-				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
-
-			}
-			gl.glEnd();
-
+		gl.glMatrixMode(gl.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glOrtho(0, resX, resY, 0, -1, 1);
+		gl.glMatrixMode(gl.GL_MODELVIEW);
+		gl.glLoadIdentity();
+		gl.glBegin(GL.GL_POINTS);
+		gl.glPointSize(40);
+		float a = resX, b=resY;
+		for( float x =0;x<resX;x++){
+			for (float y = 0;y<resY;y++){
+				gl.glPointSize(6);
+				float red  =x/resX;
+				float green = y/resY;
+				float blue= red*green;
+				gl.glColor3f(red, green, blue);
+				gl.glVertex2i((int) x, (int) y);
+				}
 		}
+		gl.glEnd();
+		
+		
+		
+		
+		
+		
+//		for (int t = 0; t < Nt - 1; t++) {
+//			gl.glBegin(GL.GL_LINE_LOOP);
+//			for (int k = 0; k < 3; k++) {
+//				double[] a = pontosTrans[triangulos[t][k]];
+//				gl.glColor3f(1, 1, 1);
+//				double zoom = 10;
+//				gl.glVertex2d(a[0] / zoom, a[1] / zoom);
+//				System.out.println(a[0]);
+//
+//			}
+//			gl.glEnd();
+//
+//		}
 
 	}
 
@@ -341,6 +369,7 @@ public class FinalClass implements GLEventListener {
 		update();
 		render(drawable);
 	}
+	
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
@@ -374,12 +403,25 @@ public class FinalClass implements GLEventListener {
 
 		// tratar casos de divisao por zero
 		int inclinacaoP1P2, inclinacaoP1P3, inclinacaoP2P3;
-		inclinacaoP1P2 = (ponto[0][1] - ponto[1][1]) / ponto[0][0]
-				- ponto[1][0];
-		inclinacaoP1P3 = (ponto[0][1] - ponto[2][1]) / ponto[0][0]
-				- ponto[2][0];
-		inclinacaoP2P3 = (ponto[1][1] - ponto[2][1]) / ponto[1][0]
-				- ponto[2][0];
+		if (ponto[0][0] - ponto[1][0] == 0) {
+			inclinacaoP1P2 = 0;
+		} else {
+			inclinacaoP1P2 = (ponto[0][1] - ponto[1][1])
+					/ (ponto[0][0] - ponto[1][0]);
+		}
+
+		if (ponto[0][0] - ponto[2][0] == 0) {
+			inclinacaoP1P3 = 0;
+		} else {
+			inclinacaoP1P3 = (ponto[0][1] - ponto[2][1])
+					/ (ponto[0][0] - ponto[2][0]);
+		}
+		if (ponto[1][0] - ponto[2][0] == 0) {
+			inclinacaoP2P3 = 0;
+		} else {
+			inclinacaoP2P3 = (ponto[1][1] - ponto[2][1])
+					/ (ponto[1][0] - ponto[2][0]);
+		}
 		// dividir o triangulo em dois triangulos
 		int posicaoInicio = ponto[0][0], posicaoAtualY = ponto[0][1], posicaoFim;
 		posicaoInicio = ponto[0][0];
