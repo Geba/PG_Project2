@@ -30,7 +30,7 @@ public class FinalClass implements GLEventListener {
 	// atributos
 	static int[] Ia = new int[3];
 	static double Ka;
-	static int Od[] = new int[3];
+	static double Od[] = new double[3];
 	static double Kd;
 	static double Ks;
 	static double n;
@@ -54,7 +54,7 @@ public class FinalClass implements GLEventListener {
 	static int resY = 600;
 	static double[][] zbuffercamera = new double[resY][resX];
 	static double[][] zbufferluz = new double[resY][resX];
-	static double[][] matPixels = new double[resY][resX];
+	static double[][][] matCor = new double[resY][resX][3];
 	static int[][] matPointsInPixels;
 
 	static void lerObjetos() {
@@ -79,28 +79,28 @@ public class FinalClass implements GLEventListener {
 	}
 
 	static void printObjetos() {
-		// System.out.println("Np: " + Np + " Nt: " + Np);
+		System.out.println("Np: " + Np + " Nt: " + Np);
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
-				// System.out.print(pontos[i][j] + " ");
+			 System.out.print(pontos[i][j] + " ");
 			}
 		}
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-				// System.out.println(triangulos[i][j] + " ");
+			 System.out.println(triangulos[i][j] + " ");
 			}
 		}
 	}
 
 	static void printAtributos() {
-		// System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
-		// System.out.println("Ka: " + Ka);
-		// System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
-		// System.out.println("Kd: " + Kd);
-		// System.out.println("Ks: " + Ks);
-		// System.out.println("n: " + n);
-		// System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
-		// System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
+		 System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
+		 System.out.println("Ka: " + Ka);
+		 System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
+		 System.out.println("Kd: " + Kd);
+		 System.out.println("Ks: " + Ks);
+		 System.out.println("n: " + n);
+		 System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
+		 System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
 	}
 
 	static void lerAtributos() {
@@ -141,10 +141,10 @@ public class FinalClass implements GLEventListener {
 	}
 
 	static void printCamera() {
-		// System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
-		// System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
-		// System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
-		// System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
+		 System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
+		 System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
+		 System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
+		 System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
 	}
 
 	public static double[][] projetar2d(double[][] pontos) {
@@ -153,8 +153,8 @@ public class FinalClass implements GLEventListener {
 			pontos2d[i][0] = (pontos[i][0] * d) / (pontos[i][2] * hx);
 			pontos2d[i][1] = (pontos[i][1] * d) / (pontos[i][2] * hy);
 
-//			 pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (resX - 1);
-//			 pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (resY - 1);
+			// pontos2d[i][0] = ((pontos2d[i][0] + 1) / 2) * (resX - 1);
+			// pontos2d[i][1] = ((1 - pontos2d[i][1]) / 2) * (resY - 1);
 
 			matPointsInPixels[i][0] = (int) ((pontos2d[i][0] + 1) / 2 * resX + .5);
 			matPointsInPixels[i][1] = (int) (resY - ((pontos2d[i][1] + 1) / 2)
@@ -230,6 +230,7 @@ public class FinalClass implements GLEventListener {
 
 		matrizMudBase = getMudBase(U, V, N);
 		pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
+		Pl = getNewCoordinates(Pl, matrizMudBase, C);
 		// ok até aqui
 		teste();
 
@@ -252,6 +253,13 @@ public class FinalClass implements GLEventListener {
 		FPSAnimator animator = new FPSAnimator(canvas, 60);
 		animator.add(canvas);
 		animator.start();
+	}
+
+	private static double[] getNewCoordinates(double[] pl2,
+			double[][] matrizMudBase2, double[] c2) {
+		pl2 = Algeb.sub(pl2, c2);
+		pl2 = Algeb.multMatrizVetor(matrizMudBase2, pl2);
+		return pl2;
 	}
 
 	private static void teste() {
@@ -291,9 +299,10 @@ public class FinalClass implements GLEventListener {
 		}
 		return retorno;
 	}
-	//tamanho ideal camaro original zoom 10 - 8
-	//tamanho ideal camaro 2d zoom ideal .7 - 1
-	//tamanho ideal camaro 2d zoom ideal 1
+
+	// tamanho ideal camaro original zoom 10 - 8
+	// tamanho ideal camaro 2d zoom ideal .7 - 1
+	// tamanho ideal camaro 2d zoom ideal 1
 	private void render(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
@@ -345,4 +354,42 @@ public class FinalClass implements GLEventListener {
 		return new double[] { u, v, w };
 	}
 
+	public void Varrer(int[][] ponto){
+		//yMedia: Valor do y que tem o valor intermediário dos três pontos
+	
+		
+		//tratar casos de divisao por zero
+		int inclinacaoP1P2, inclinacaoP1P3, inclinacaoP2P3;
+		inclinacaoP1P2 = (ponto[0][1]-ponto[1][1])/ponto[0][0]-ponto[1][0];
+		inclinacaoP1P3 = (ponto[0][1]-ponto[2][1])/ponto[0][0]-ponto[2][0];
+		inclinacaoP2P3 = (ponto[1][1]-ponto[2][1])/ponto[1][0]-ponto[2][0];
+		//dividir o triangulo em dois triangulos
+		int posicaoInicio = ponto[0][0],posicaoAtualY=ponto[0][1],posicaoFim;
+		posicaoInicio = ponto[0][0];
+		posicaoFim = ponto[0][0];
+	//varre o primeiro triangulo
+		for(int i=ponto[0][1]; i<=ponto[1][1];i++){
+			posicaoInicio=posicaoInicio+inclinacaoP1P2;
+			posicaoFim=posicaoFim+inclinacaoP1P3;
+			int incremento = 1;
+			if(posicaoFim<posicaoInicio) incremento*=-1;
+			for(int j = posicaoInicio; j<=posicaoFim; j+=incremento){
+								
+			}
+		}
+		//varre no segundo triangulo
+		for(int i=ponto[1][1]; i<ponto[2][1];i++){
+			posicaoInicio=posicaoInicio+inclinacaoP2P3;
+			posicaoFim=posicaoFim+inclinacaoP1P3;
+			int incremento = 1;
+			if(posicaoFim<posicaoInicio) incremento*=-1;
+			for(int j = posicaoInicio; j<=posicaoFim; j+=incremento){
+								
+			}
+		}
+		//acha o ponto que intersecta as retas com maior e menor y
+		
+	}
+	
+	
 }
