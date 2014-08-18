@@ -63,8 +63,8 @@ public class GebaTeste implements GLEventListener {
 	static double[][] pontosInCamera, pontosInPlanoNormalizado;
 
 	// Mapeamento da tela
-	static int resX = 640;
-	static int resY = 480;
+	static int resX = 1280;
+	static int resY = 720;
 	static double[][] zbuffercamera = new double[resX][resY];
 	static double[][] zbufferluz = new double[resX][resY];
 	static double[][] pontosInPixels;// [indice do ponto][{xdo pixel, y do
@@ -280,6 +280,15 @@ public class GebaTeste implements GLEventListener {
 		}
 		gl.glEnd();
 
+		for (int i = 0; i < triangulos.length; i++) {
+			gl.glBegin(GL.GL_LINE_LOOP);
+			for(int j = 0;j<3;j++){
+				gl.glPointSize(20);
+				gl.glColor3f(1.f, 1.f, 1.f);
+				gl.glVertex2d(pontosInPixels[triangulos[i][j]][0], pontosInPixels[triangulos[i][j]][1]);
+			}
+			gl.glEnd();
+		}
 		gl.glBegin(GL.GL_POINTS);
 		for (int i = 0; i < pontosInPlanoNormalizado.length; i++) {
 			gl.glPointSize(20);
@@ -288,7 +297,10 @@ public class GebaTeste implements GLEventListener {
 
 		}
 		gl.glEnd();
-
+		
+		
+		
+		
 		// for (int t = 0; t < Nt - 1; t++) {
 		// gl.glBegin(GL.GL_POINTS);
 		// for (int k = 0; k < 3; k++) {
@@ -311,21 +323,23 @@ public class GebaTeste implements GLEventListener {
 			px1 = pontosInPixels[triangulos[t][0]];
 			px2 = pontosInPixels[triangulos[t][1]];
 			px3 = pontosInPixels[triangulos[t][2]];
-			// System.out.println(px1[1]+" "+px2[1]+" "+px3[1]+" ");
-			double deltax, deltay, deltal1, deltal2, xintersect, deltaz;
+			
+			double deltax, deltay, coefAng1, coefAngl2, xintersect, deltaz;
 			double[] pxIntersect;// ponto de corte dos triangulo em 2;
+			
 			deltax = px2[0] - px1[0];
 			deltay = px2[1] - px1[1];
+			
 			if (deltay == 0) {// triangulo virado para baixo
 				scan(triangulos[t][0], triangulos[t][1], px1, px2, px3,
 						pontosInCamera[triangulos[t][2]]);
 				scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2], 0,
 						false);
 			} else {
-				deltal1 = deltax / deltay;// calcula o delta da reta p1 a p2
+				coefAng1 = deltax / deltay;// calcula o delta da reta p1 a p2
 				deltax = px3[0] - px1[0];
 				deltay = px3[1] - px1[1];
-				deltal2 = deltax / deltay;// calcula o delta da reta p1 a p3
+				coefAngl2 = deltax / deltay;// calcula o delta da reta p1 a p3
 				pxIntersect = new double[3];
 				pxIntersect[1] = px2[1];// /o ponto de intersessao tem o// mesmo
 										// y// de p2
@@ -378,7 +392,23 @@ public class GebaTeste implements GLEventListener {
 	}
 
 	public static void scan2(int a1, int a2, int a3, double alpha, boolean top) {
+		if (top) {
 
+//			float invslope1 = (v2.x - v1.x) / (v2.y - v1.y);
+//			float invslope2 = (v3.x - v1.x) / (v3.y - v1.y);
+//
+//			float curx1 = v1.x;
+//			float curx2 = v1.x;
+//
+//			for (int scanlineY = v1.y; scanlineY <= v2.y; scanlineY++) {
+//				// drawLine((int)curx1, scanlineY, (int)curx2, scanlineY);
+//				curx1 += invslope1;
+//				curx2 += invslope2;
+//			}
+
+		} else {
+
+		}
 	}
 
 	public static void scan(int a1, int a2, double[] px1, double[] px2,
