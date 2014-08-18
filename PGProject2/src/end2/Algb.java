@@ -24,19 +24,26 @@ public class Algb {
 
 	static double distancia(double[] a, double[] b) {
 		double d = 0;
-		for(int i =0;i<a.length;i++){
-			d += (a[i] - b[i])*(a[i]-b[i]);
+		for (int i = 0; i < a.length; i++) {
+			d += (a[i] - b[i]) * (a[i] - b[i]);
 		}
 		return Math.sqrt(d);
-		
+
 	}
 
-	static double prodEscalar(double[] a, double[] b) {// produto escalar a.b
+	public static double prodEscalar(double[] a, double[] b) {// produto escalar a.b
 		double resp = 0;
 		for (int i = 0; i < a.length; i++) {
 			resp += a[i] * b[i];
 		}
 		return resp;
+	}
+
+	public static double[] prodByEscalar(double escalar, double[] vetor) {
+		for (int i = 0; i < vetor.length; i++) {
+			vetor[i] = escalar * vetor[i];
+		}
+		return vetor;
 	}
 
 	public static double[] prodVetorial(double[] a, double[] b) {
