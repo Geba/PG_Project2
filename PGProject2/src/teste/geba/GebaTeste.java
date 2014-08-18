@@ -394,31 +394,36 @@ public class GebaTeste implements GLEventListener {
 			boolean top) {
 
 		if (top) {
-			
-			// float invslope1 = (v2.x - v1.x) / (v2.y - v1.y);
-			// float invslope2 = (v3.x - v1.x) / (v3.y - v1.y);
-			//
-			// float curx1 = v1.x;
-			// float curx2 = v1.x;
-			//
-			// for (int scanlineY = v1.y; scanlineY <= v2.y; scanlineY++) {
-			// // drawLine((int)curx1, scanlineY, (int)curx2, scanlineY);
-			// curx1 += invslope1;
-			// curx2 += invslope2;
-			// }
+
+			double invslope1 = (pontosInPixels[index2][0] - pontosInPixels[index1][0])
+					/ (pontosInPixels[index2][1] - pontosInPixels[index1][1]);
+			double invslope2 = (pontosInPixels[index3][0] - pontosInPixels[index1][0])
+					/ (pontosInPixels[index3][1] - pontosInPixels[index1][1]);
+
+			double curx1 = pontosInPixels[index1][0];
+			double curx2 = pontosInPixels[index1][0];
+			if (curx1 < 0)
+				curx1 = 0;
+			if (curx2 > resY)
+				curx2 = resY;
+
+			for (int y = (int) pontosInPixels[index1][1]; y <= pontosInPixels[index2][1]; y++) {
+				for (int x = (int) curx1; x <= curx2; x++) {
+					System.out.println(y);
+					matCor[x][y] = new float[] { .8f, .8f, .8f };
+				}
+
+				curx1 += invslope1;
+				curx2 += invslope2;
+				if (curx1 < 0)
+					curx1 = 0;
+				if (curx2 > resY)
+					curx2 = resY;
+
+			}
 
 		} else {
-			// float invslope1 = (v3.x - v1.x) / (v3.y - v1.y);
-			// float invslope2 = (v3.x - v2.x) / (v3.y - v2.y);
-			//
-			// float curx1 = v3.x;
-			// float curx2 = v3.x;
-			//
-			// for (int scanlineY = v3.y; scanlineY > v1.y; scanlineY--)
-			// {
-			// curx1 -= invslope1;
-			// curx2 -= invslope2;
-			// drawLine((int)curx1, scanlineY, (int)curx2, scanlineY);
+
 		}
 	}
 
