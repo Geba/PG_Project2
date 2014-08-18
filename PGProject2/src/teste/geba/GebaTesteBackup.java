@@ -2,7 +2,6 @@ package teste.geba;
 
 import end2.Arquivo;
 import end2.Algb;
-import end2.Varredura;
 
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
@@ -28,7 +27,7 @@ import org.la4j.vector.dense.BasicVector;
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
-public class GebaTeste implements GLEventListener {
+public class GebaTesteBackup implements GLEventListener {
 
 	// objetos
 	static int Np;
@@ -60,14 +59,14 @@ public class GebaTeste implements GLEventListener {
 	// auxiliares
 	static double[] zero = { 0.0, 0.0, 0.0 };
 	static double[][] matrizMudBase = new double[V.length][V.length];
-	static double[][] pontosInCamera, pontosInPlanoNormalizado;
+	static double[][] pontosTrans, pontos2d;
 
 	// Mapeamento da tela
 	static int resX = 640;
 	static int resY = 480;
 	static double[][] zbuffercamera = new double[resX][resY];
 	static double[][] zbufferluz = new double[resX][resY];
-	static double[][] pontosInPixels;// [indice do ponto][{xdo pixel, y do
+	static double[][] matPointsInPixels;// [indice do ponto][{xdo pixel, y do
 										// pixel}]//equivalentes ao ponto
 	static float[][][] matCor = new float[resX][resY][3];// [x do pixel][y do
 															// pixel][{red,
@@ -79,8 +78,8 @@ public class GebaTeste implements GLEventListener {
 			pontos2d[i][0] = (d / hx) * (pontosTrans[i][0] / pontosTrans[i][2]);
 			pontos2d[i][1] = (d / hy) * (pontosTrans[i][1] / pontosTrans[i][2]);
 
-			pontosInPixels[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
-			pontosInPixels[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
+			matPointsInPixels[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
+			matPointsInPixels[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
 			// pontos2d[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
 			// pontos2d[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
 		}
@@ -89,20 +88,20 @@ public class GebaTeste implements GLEventListener {
 
 	static void ordenarTriangulos() {
 		for (int t = 0; t < triangulos.length; t++) {
-			if (pontosInCamera[triangulos[t][1]][1] < pontosInCamera[triangulos[t][2]][1]) {
-				int aux = triangulos[t][2];
-				triangulos[t][2] = triangulos[t][1];
-				triangulos[t][1] = aux;
+			if (pontosTrans[triangulos[t][1]][1] < pontosTrans[triangulos[t][2]][1]) {
+				double[] aux = pontosTrans[triangulos[t][2]];
+				pontosTrans[triangulos[t][2]] = pontosTrans[triangulos[t][1]];
+				pontosTrans[triangulos[t][1]] = aux;
 			}
-			if (pontosInCamera[triangulos[t][0]][1] < pontosInCamera[triangulos[t][1]][1]) {
-				int aux = triangulos[t][1];
-				triangulos[t][1] = triangulos[t][0];
-				triangulos[t][0] = aux;
+			if (pontosTrans[triangulos[t][0]][1] < pontosTrans[triangulos[t][0]][1]) {
+				double[] aux = pontosTrans[triangulos[t][1]];
+				pontosTrans[triangulos[t][1]] = pontosTrans[triangulos[t][0]];
+				pontosTrans[triangulos[t][0]] = aux;
 			}
-			if (pontosInCamera[triangulos[t][1]][1] < pontosInCamera[triangulos[t][2]][1]) {
-				int aux = triangulos[t][2];
-				triangulos[t][2] = triangulos[t][1];
-				triangulos[t][1] = aux;
+			if (pontosTrans[triangulos[t][1]][1] < pontosTrans[triangulos[t][2]][1]) {
+				double[] aux = pontosTrans[triangulos[t][2]];
+				pontosTrans[triangulos[t][2]] = pontosTrans[triangulos[t][1]];
+				pontosTrans[triangulos[t][1]] = aux;
 			}
 		}
 	}
@@ -171,12 +170,12 @@ public class GebaTeste implements GLEventListener {
 
 		matrizMudBase = getMudBase(U, V, N);
 		calcularNormais();
-		pontosInCamera = getNewCoordinates(pontos, matrizMudBase, C);
+		pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
 		Pl = getNewCoordinates(Pl, matrizMudBase, C);
 		// ok até aqui
 		teste();
 
-		pontosInPlanoNormalizado = projetar2d(pontosInCamera);
+		pontos2d = projetar2d(pontosTrans);
 		ordenarTriangulos();
 		Frame frame = new Frame("AWT Window Test");
 		frame.setSize(resX, resY);
@@ -191,7 +190,7 @@ public class GebaTeste implements GLEventListener {
 				System.exit(0);
 			}
 		});
-		canvas.addGLEventListener(new GebaTeste());
+		canvas.addGLEventListener(new GebaTesteBackup());
 		FPSAnimator animator = new FPSAnimator(canvas, 60);
 		animator.add(canvas);
 		animator.start();
@@ -199,8 +198,8 @@ public class GebaTeste implements GLEventListener {
 
 	private static void printPontosTrans() {
 		for (int i = 0; i < Np; i++) {
-			System.out.println(pontosInCamera[i][0] + " "
-					+ pontosInCamera[i][1] + " " + pontosInCamera[i][2]);
+			System.out.println(pontosTrans[i][0] + " " + pontosTrans[i][1]
+					+ " " + pontosTrans[i][2]);
 		}
 
 	}
@@ -213,8 +212,7 @@ public class GebaTeste implements GLEventListener {
 	}
 
 	private static void teste() {
-		scanline();
-
+		scanline2();
 	}
 
 	private static double[][] getMudBase(double[] u, double[] v, double[] n) {
@@ -258,9 +256,9 @@ public class GebaTeste implements GLEventListener {
 		for (float x = 0; x < resX; x++) {
 			for (float y = 0; y < resY; y++) {
 				gl.glPointSize(6);
-				float red = 1;
-				float green = (230.0f / 255.0f);
-				float blue = 0;
+				float red = x / resX;
+				float green = y / resY;
+				float blue = red * green;
 				matCor[(int) x][(int) y] = new float[] { red, green, blue };
 				gl.glColor3f(red, green, blue);
 				gl.glVertex2i((int) x, (int) y);
@@ -268,8 +266,8 @@ public class GebaTeste implements GLEventListener {
 		}
 		gl.glEnd();
 
-		// scanline();
 		scanline2();
+		// scanline();
 
 		gl.glBegin(GL.GL_POINTS);
 		for (int x = 0; x < resX; x++) {
@@ -281,10 +279,10 @@ public class GebaTeste implements GLEventListener {
 		gl.glEnd();
 
 		gl.glBegin(GL.GL_POINTS);
-		for (int i = 0; i < pontosInPlanoNormalizado.length; i++) {
+		for (int i = 0; i < pontos2d.length; i++) {
 			gl.glPointSize(20);
-			gl.glColor3f(1.f, (72.0f) / 255.f, 149.f / 255.f);
-			gl.glVertex2d(pontosInPixels[i][0], pontosInPixels[i][1]);
+			gl.glColor3f(.1f, .1f, .1f);
+			gl.glVertex2d(matPointsInPixels[i][0], matPointsInPixels[i][1]);
 
 		}
 		gl.glEnd();
@@ -308,9 +306,9 @@ public class GebaTeste implements GLEventListener {
 	private static void scanline2() {
 		for (int t = 0; t < triangulos.length; t++) {// para cada triangulo
 			double[] px1, px2, px3;
-			px1 = pontosInPixels[triangulos[t][0]];
-			px2 = pontosInPixels[triangulos[t][1]];
-			px3 = pontosInPixels[triangulos[t][2]];
+			px1 = matPointsInPixels[triangulos[t][0]];
+			px2 = matPointsInPixels[triangulos[t][1]];
+			px3 = matPointsInPixels[triangulos[t][2]];
 			// System.out.println(px1[1]+" "+px2[1]+" "+px3[1]+" ");
 			double deltax, deltay, deltal1, deltal2, xintersect, deltaz;
 			double[] pxIntersect;// ponto de corte dos triangulo em 2;
@@ -318,9 +316,7 @@ public class GebaTeste implements GLEventListener {
 			deltay = px2[1] - px1[1];
 			if (deltay == 0) {// triangulo virado para baixo
 				scan(triangulos[t][0], triangulos[t][1], px1, px2, px3,
-						pontosInCamera[triangulos[t][2]]);
-				scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2], 0,
-						false);
+						pontosTrans[triangulos[t][2]]);
 			} else {
 				deltal1 = deltax / deltay;// calcula o delta da reta p1 a p2
 				deltax = px3[0] - px1[0];
@@ -342,42 +338,32 @@ public class GebaTeste implements GLEventListener {
 				alfax = (pxIntersect[0] - px1[0]) / (px3[0] - px1[0]);
 				alfay = (pxIntersect[1] - px1[1]) / (px3[1] - px1[1]);
 				alfa = 0;
-				if (alfax != 0 && alfay != 0) {
-					if (alfax > alfay) {// os pontos podem estar na vertical ou
-										// na
-										// horizontal, em um desses casos, alfax
-										// ou
-										// alfay é zero, em qualquer outro caso,
-										// eles são
-										// iguais
 
-						alfa = alfax;
-					} else if (alfay != 0) {
-						alfa = alfay;
-					}
-					double[] ptIntersect = Algb.soma(Algb.prodByEscalar(alfa,
-							pontosInCamera[triangulos[t][0]]), Algb
-							.prodByEscalar((1 - alfa),
-									pontosInCamera[triangulos[t][2]]));
-					// ponto em coordenadas de vista
+				if (alfax > alfay) {// os pontos podem estar na vertical ou na
+									// horizontal, em um desses casos, alfax ou
+									// alfay é zero, em qualquer outro caso,
+									// eles são
+									// iguais
 
-					// é bom lancar umas threads aqui
-
-					scan(triangulos[t][0], triangulos[t][1], px1, px2,
-							pxIntersect, ptIntersect);
-					scan(triangulos[t][1], triangulos[t][2], px2, px3,
-							pxIntersect, ptIntersect);
-					scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
-							alfa, true);
-					scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
-							alfa, false);
+					alfa = alfax;
+				} else if (alfay != 0) {
+					alfa = alfay;
 				}
+				double[] ptIntersect = Algb.soma(Algb.prodByEscalar(alfa,pontosTrans[triangulos[t][0]]), Algb.prodByEscalar(
+						(1 - alfa), pontosTrans[triangulos[t][2]]));
+				// ponto em coordenadas de vista
 
+				
+				
+				// é bom lancar umas threads aqui
+
+				scan(triangulos[t][0], triangulos[t][1], px1, px2, pxIntersect,
+						ptIntersect);
+				scan(triangulos[t][1], triangulos[t][2], px2, px3, pxIntersect,
+						ptIntersect);
 			}
-		}
-	}
 
-	public static void scan2(int a1, int a2, int a3, double alpha, boolean top) {
+		}
 
 	}
 
@@ -385,8 +371,8 @@ public class GebaTeste implements GLEventListener {
 			double[] px3, double[] p3) {
 		// a1 -e o indice do px1, a2 o do px2, px1 e px2 fazem parte do
 		// matPointToPixel. px3 é dado, pois foi calculado pelo split
-		double[] p1_3d = pontosInCamera[a1];
-		double[] p2_3d = pontosInCamera[a2];
+		double[] p1_3d = pontosTrans[a1];
+		double[] p2_3d = pontosTrans[a2];
 		double[] p3_3d = p3;
 		double deltax1, deltax2, deltay1, deltay2, alfa1, alfa2, x0, y0, xf, yf;
 		double y, x;
@@ -424,10 +410,11 @@ public class GebaTeste implements GLEventListener {
 			y0 = 0;
 		if (yf > resY)
 			yf = resY;
-		for (y = y0; y < yf && y >= y0; y += incy) {
 
-			x0 = x0 + (1 / alfa1);
-			xf = xf + (1 / alfa2);
+		for (y = y0; y < yf && y >= y0; y += incy) {
+			System.out.println("oi");
+			x0 = x0 + 1 / alfa1;
+			xf = xf + 1 / alfa2;
 			if (x0 > xf) {
 				double aux = xf;
 				xf = x0;
@@ -437,8 +424,8 @@ public class GebaTeste implements GLEventListener {
 				x0 = 0;
 			if (xf > resX)
 				xf = resX;
-			for (x = x0; x < xf; x += .5) {
-				float[] cor = { 37.f / 255.f, 177.f / 255.f, 204.f / 255.f };
+			for (x = x0; x < xf; x += .05) {
+				float[] cor = { 1, 1, 1 };
 
 				matCor[(int) x][(int) y] = cor;
 				// doPhong();
@@ -484,21 +471,21 @@ public class GebaTeste implements GLEventListener {
 
 	}
 
-	public static void scanline() {
+	public void scanline() {
 		for (int t = 0; t < Nt; t++) {// para cada triangulo
-			double[] p1 = pontosInPixels[triangulos[t][0]];// pegue o x e o y
-															// de seus
-															// vertices, na
-															// tela
-			double[] p2 = pontosInPixels[triangulos[t][1]];
-			double[] p3 = pontosInPixels[triangulos[t][2]];
+			double[] p1 = matPointsInPixels[triangulos[t][0]];// pegue o x e o y
+																// de seus
+																// vertices, na
+																// tela
+			double[] p2 = matPointsInPixels[triangulos[t][1]];
+			double[] p3 = matPointsInPixels[triangulos[t][2]];
 			double[][] tnatela = { p1, p2, p3 };
 			Varrer(tnatela, triangulos[t]);
 			// System.out.println("oi");
 		}
 	}
 
-	public static void Varrer(double[][] pontosNatela, int[] indicepontos) {
+	public void Varrer(double[][] pontosNatela, int[] indicepontos) {
 
 		// yMedia: Valor do y que tem o valor intermediário dos três pontos
 
@@ -603,7 +590,7 @@ public class GebaTeste implements GLEventListener {
 
 	}
 
-	private static void doPhong() {
+	private void doPhong() {
 		// TODO Auto-generated method stub
 
 	}
@@ -614,9 +601,9 @@ public class GebaTeste implements GLEventListener {
 		Nt = arq.readInt();
 		pontos = new double[Np][3];
 		triangulos = new int[Nt][3];
-		pontosInCamera = new double[Np][3];
-		pontosInPlanoNormalizado = new double[Np][2];
-		pontosInPixels = new double[Np][2];
+		pontosTrans = new double[Np][3];
+		pontos2d = new double[Np][2];
+		matPointsInPixels = new double[Np][2];
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
 				pontos[i][j] = arq.readDouble();

@@ -1,4 +1,4 @@
-package end;
+package end2;
 
 public class Ordena {
 	static public int[][] ordenaMatriz(int[][] tri, double[][] pt) {
