@@ -282,10 +282,11 @@ public class GebaTeste implements GLEventListener {
 
 		for (int i = 0; i < triangulos.length; i++) {
 			gl.glBegin(GL.GL_LINE_LOOP);
-			for(int j = 0;j<3;j++){
+			for (int j = 0; j < 3; j++) {
 				gl.glPointSize(20);
 				gl.glColor3f(1.f, 1.f, 1.f);
-				gl.glVertex2d(pontosInPixels[triangulos[i][j]][0], pontosInPixels[triangulos[i][j]][1]);
+				gl.glVertex2d(pontosInPixels[triangulos[i][j]][0],
+						pontosInPixels[triangulos[i][j]][1]);
 			}
 			gl.glEnd();
 		}
@@ -297,10 +298,7 @@ public class GebaTeste implements GLEventListener {
 
 		}
 		gl.glEnd();
-		
-		
-		
-		
+
 		// for (int t = 0; t < Nt - 1; t++) {
 		// gl.glBegin(GL.GL_POINTS);
 		// for (int k = 0; k < 3; k++) {
@@ -323,16 +321,17 @@ public class GebaTeste implements GLEventListener {
 			px1 = pontosInPixels[triangulos[t][0]];
 			px2 = pontosInPixels[triangulos[t][1]];
 			px3 = pontosInPixels[triangulos[t][2]];
-			
+
 			double deltax, deltay, coefAng1, coefAngl2, xintersect, deltaz;
 			double[] pxIntersect;// ponto de corte dos triangulo em 2;
-			
+
 			deltax = px2[0] - px1[0];
 			deltay = px2[1] - px1[1];
-			
+
 			if (deltay == 0) {// triangulo virado para baixo
 				scan(triangulos[t][0], triangulos[t][1], px1, px2, px3,
 						pontosInCamera[triangulos[t][2]]);
+
 				scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2], 0,
 						false);
 			} else {
@@ -391,23 +390,35 @@ public class GebaTeste implements GLEventListener {
 		}
 	}
 
-	public static void scan2(int a1, int a2, int a3, double alpha, boolean top) {
-		if (top) {
+	public static void scan2(int index1, int index2, int index3, double alfa,
+			boolean top) {
 
-//			float invslope1 = (v2.x - v1.x) / (v2.y - v1.y);
-//			float invslope2 = (v3.x - v1.x) / (v3.y - v1.y);
-//
-//			float curx1 = v1.x;
-//			float curx2 = v1.x;
-//
-//			for (int scanlineY = v1.y; scanlineY <= v2.y; scanlineY++) {
-//				// drawLine((int)curx1, scanlineY, (int)curx2, scanlineY);
-//				curx1 += invslope1;
-//				curx2 += invslope2;
-//			}
+		if (top) {
+			
+			// float invslope1 = (v2.x - v1.x) / (v2.y - v1.y);
+			// float invslope2 = (v3.x - v1.x) / (v3.y - v1.y);
+			//
+			// float curx1 = v1.x;
+			// float curx2 = v1.x;
+			//
+			// for (int scanlineY = v1.y; scanlineY <= v2.y; scanlineY++) {
+			// // drawLine((int)curx1, scanlineY, (int)curx2, scanlineY);
+			// curx1 += invslope1;
+			// curx2 += invslope2;
+			// }
 
 		} else {
-
+			// float invslope1 = (v3.x - v1.x) / (v3.y - v1.y);
+			// float invslope2 = (v3.x - v2.x) / (v3.y - v2.y);
+			//
+			// float curx1 = v3.x;
+			// float curx2 = v3.x;
+			//
+			// for (int scanlineY = v3.y; scanlineY > v1.y; scanlineY--)
+			// {
+			// curx1 -= invslope1;
+			// curx2 -= invslope2;
+			// drawLine((int)curx1, scanlineY, (int)curx2, scanlineY);
 		}
 	}
 
@@ -415,11 +426,14 @@ public class GebaTeste implements GLEventListener {
 			double[] px3, double[] p3) {
 		// a1 -e o indice do px1, a2 o do px2, px1 e px2 fazem parte do
 		// matPointToPixel. px3 é dado, pois foi calculado pelo split
+
 		double[] p1_3d = pontosInCamera[a1];
 		double[] p2_3d = pontosInCamera[a2];
 		double[] p3_3d = p3;
+
 		double deltax1, deltax2, deltay1, deltay2, alfa1, alfa2, x0, y0, xf, yf;
 		double y, x;
+
 		if (px2[1] == px3[1]) {// triangulo virado para cima
 			deltax1 = px2[0] - px1[0];
 			deltax2 = px3[0] - px1[0];
