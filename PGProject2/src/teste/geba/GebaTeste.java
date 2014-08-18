@@ -6,6 +6,7 @@ import end2.Algb;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Scanner;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -85,6 +86,26 @@ public class GebaTeste implements GLEventListener {
 		return pontos2d;
 	}
 
+	static void ordenarTriangulos() {
+		for (int t = 0; t < triangulos.length; t++) {
+			if (pontosTrans[triangulos[t][1]][1] < pontosTrans[triangulos[t][2]][1]) {
+				double[] aux = pontosTrans[triangulos[t][2]];
+				pontosTrans[triangulos[t][2]] = pontosTrans[triangulos[t][1]];
+				pontosTrans[triangulos[t][1]] = aux;
+			}
+			if (pontosTrans[triangulos[t][0]][1] < pontosTrans[triangulos[t][0]][1]) {
+				double[] aux = pontosTrans[triangulos[t][1]];
+				pontosTrans[triangulos[t][1]] = pontosTrans[triangulos[t][0]];
+				pontosTrans[triangulos[t][0]] = aux;
+			}
+			if (pontosTrans[triangulos[t][1]][1] < pontosTrans[triangulos[t][2]][1]) {
+				double[] aux = pontosTrans[triangulos[t][2]];
+				pontosTrans[triangulos[t][2]] = pontosTrans[triangulos[t][1]];
+				pontosTrans[triangulos[t][1]] = aux;
+			}
+		}
+	}
+
 	static void calcularNormais() {
 		NormTriangulos = new double[Nt][3];
 		NormPontos = new double[Np][3];
@@ -141,12 +162,8 @@ public class GebaTeste implements GLEventListener {
 		GLCapabilities caps = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(caps);
 		V = Algb.sub(V, Algb.projec(V, N));
-		System.out.println("V = V-Proj(V,N): " + Algb.VectorToString(V));
 		U = Algb.prodVetorial(N, V);
-		System.out.println("NxV: " + Algb.VectorToString(U));
-
 		// normalizando
-
 		U = Algb.normalize(U);
 		V = Algb.normalize(V);
 		N = Algb.normalize(N);
@@ -159,7 +176,7 @@ public class GebaTeste implements GLEventListener {
 		teste();
 
 		pontos2d = projetar2d(pontosTrans);
-
+		ordenarTriangulos();
 		Frame frame = new Frame("AWT Window Test");
 		frame.setSize(resX, resY);
 		frame.add(canvas);
@@ -195,8 +212,7 @@ public class GebaTeste implements GLEventListener {
 	}
 
 	private static void teste() {
-		// printNormals();
-		double[][] pontosTrans = getNewCoordinates(pontos, matrizMudBase, C);
+		scanline2();
 	}
 
 	private static double[][] getMudBase(double[] u, double[] v, double[] n) {
@@ -237,20 +253,21 @@ public class GebaTeste implements GLEventListener {
 		gl.glBegin(GL.GL_POINTS);
 		gl.glPointSize(40);
 
-		// for (float x = 0; x < resX; x++) {
-		// for (float y = 0; y < resY; y++) {
-		// gl.glPointSize(6);
-		// float red = x / resX;
-		// float green = y / resY;
-		// float blue = red * green;
-		// matCor[(int) x][(int) y] = new float[] { red, green, blue };
-		// gl.glColor3f(red, green, blue);
-		// gl.glVertex2i((int) x, (int) y);
-		// }
-		// }
-		// gl.glEnd();
+		for (float x = 0; x < resX; x++) {
+			for (float y = 0; y < resY; y++) {
+				gl.glPointSize(6);
+				float red = x / resX;
+				float green = y / resY;
+				float blue = red * green;
+				matCor[(int) x][(int) y] = new float[] { red, green, blue };
+				gl.glColor3f(red, green, blue);
+				gl.glVertex2i((int) x, (int) y);
+			}
+		}
+		gl.glEnd();
 
 		scanline2();
+		// scanline();
 
 		gl.glBegin(GL.GL_POINTS);
 		for (int x = 0; x < resX; x++) {
@@ -263,7 +280,8 @@ public class GebaTeste implements GLEventListener {
 
 		gl.glBegin(GL.GL_POINTS);
 		for (int i = 0; i < pontos2d.length; i++) {
-			gl.glColor3f(1, 1, 1);
+			gl.glPointSize(20);
+			gl.glColor3f(.1f, .1f, .1f);
 			gl.glVertex2d(matPointsInPixels[i][0], matPointsInPixels[i][1]);
 
 		}
@@ -285,68 +303,126 @@ public class GebaTeste implements GLEventListener {
 
 	}
 
-	private void scanline2() {
+	private static void scanline2() {
 		for (int t = 0; t < triangulos.length; t++) {// para cada triangulo
 			double[] px1, px2, px3;
 			px1 = matPointsInPixels[triangulos[t][0]];
-			px2 = matPointsInPixels[triangulos[t][0]];
-			px3 = matPointsInPixels[triangulos[t][0]];
+			px2 = matPointsInPixels[triangulos[t][1]];
+			px3 = matPointsInPixels[triangulos[t][2]];
+			// System.out.println(px1[1]+" "+px2[1]+" "+px3[1]+" ");
 			double deltax, deltay, deltal1, deltal2, xintersect, deltaz;
-			double[] pxIntersect;
+			double[] pxIntersect;// ponto de corte dos triangulo em 2;
 			deltax = px2[0] - px1[0];
 			deltay = px2[1] - px1[1];
-			if (deltay != 0) {
+			if (deltay == 0) {// triangulo virado para baixo
+				scan(triangulos[t][0], triangulos[t][1], px1, px2, px3,
+						pontos[triangulos[t][2]]);
+			} else {
 				deltal1 = deltax / deltay;// calcula o delta da reta p1 a p2
-			} else {
-				deltal1 = Double.MAX_VALUE;
-			}
-			deltax = px3[0] - px1[0];
-			deltay = px3[1] - px1[1];
-
-			if (deltay != 0) {
+				deltax = px3[0] - px1[0];
+				deltay = px3[1] - px1[1];
 				deltal2 = deltax / deltay;// calcula o delta da reta p1 a p3
-			} else {
-				deltal2 = Double.MAX_VALUE;
-			}
-			pxIntersect = new double[3];
-			pxIntersect[1] = px2[1];// /o ponto de intersessao tem o mesmo y
-									// de p2
-			xintersect = px1[0] + ((px2[1] - px1[1]) / deltal2);
-			pxIntersect[0] = xintersect;// o ponto de intercessao tem esse x
+				pxIntersect = new double[3];
+				pxIntersect[1] = px2[1];// /o ponto de intersessao tem o// mesmo
+										// y// de p2
+										// xintersect = px1[0] + ((px3[1] -
+										// px1[1]) / deltal2)*(pxIntersect[1] -
+										// px1[1]);
+				xintersect = px1[0] + ((px3[0] - px1[0]) / (px3[1] - px1[1]))* (px2[1] - px1[1]);
+				//pI.x = p1.x+ ((p3.x-p1.x)/(p3.y-p1.y))*(p2.y-p1.y) 
+				pxIntersect[0] = xintersect;// o ponto de intercessao tem
+											// esse x
 
-			double alfax, alfay, alfa;
-			alfax = (pxIntersect[0] - px1[0]) / (px3[0] - px1[0]);
-			alfay = (pxIntersect[1] - px1[1]) / (px3[1] - px1[1]);
-			alfa = 0;
-			if (alfax > alfay) {
-				alfa = alfax;
-			} else if (alfay != 0) {
-				alfa = alfay;
-			}
-			double[] ptIntersect = Algb.soma(
-					Algb.prodByEscalar(alfa, pontos[triangulos[t][0]]),
-					Algb.prodByEscalar((1 - alfa), pontos[triangulos[t][2]]));
-			// ponto em coordenadas de vista
-			// é bom lancar umas threads aqui
+				double alfax, alfay, alfa;
+				alfax = (pxIntersect[0] - px1[0]) / (px3[0] - px1[0]);
+				alfay = (pxIntersect[1] - px1[1]) / (px3[1] - px1[1]);
+				alfa = 0;
+				if (alfax > alfay) {
+					alfa = alfax;
+				} else if (alfay != 0) {
+					alfa = alfay;
+				}
+				double[] ptIntersect = Algb.soma(Algb.prodByEscalar(alfa,
+						pontos[triangulos[t][0]]), Algb.prodByEscalar(
+						(1 - alfa), pontos[triangulos[t][2]]));
+				// ponto em coordenadas de vista
+				// é bom lancar umas threads aqui
 
-			scan(triangulos[t][0], triangulos[t][1], px1, px2, pxIntersect,
-					ptIntersect);
-			scan(triangulos[t][1], triangulos[t][2], px2, px3, pxIntersect,
-					ptIntersect);
+				scan(triangulos[t][0], triangulos[t][1], px1, px2, pxIntersect,
+						ptIntersect);
+				scan(triangulos[t][1], triangulos[t][2], px2, px3, pxIntersect,
+						ptIntersect);
+			}
+
 		}
 
 	}
 
-	public void scan(int a1, int a2, double[] px1, double[] px2, double[] px3, double[] p3) {
+	public static void scan(int a1, int a2, double[] px1, double[] px2,
+			double[] px3, double[] p3) {
 		// a1 -e o indice do px1, a2 o do px2, px1 e px2 fazem parte do
 		// matPointToPixel. px3 é dado, pois foi calculado pelo split
-		double[] p1_3d =pontos[a1];
-		double[] p2_3d =pontos[a2];
-		double[] p3_3d =p3;
-		
-		
-		
-		
+		double[] p1_3d = pontos[a1];
+		double[] p2_3d = pontos[a2];
+		double[] p3_3d = p3;
+		double deltax1, deltax2, deltay1, deltay2, alfa1, alfa2, x0, y0, xf, yf;
+		double y, x;
+		if (px2[1] == px3[1]) {// triangulo virado para cima
+			deltax1 = px2[0] - px1[0];
+			deltax2 = px3[0] - px1[0];
+			deltay1 = px2[1] - px1[1];
+			deltay2 = px2[1] - px1[1];
+			y0 = px1[1];
+			yf = px2[1];
+			x0 = px1[0];
+			xf = x0;
+			alfa1 = deltay1 / deltax1;
+			alfa2 = deltay2 / deltax2;
+			// System.out.println("entrei aqui");
+		} else {// triangulo virado para baixo px1.y = px3.y
+			deltax1 = px1[0] - px2[0];
+			deltax2 = px3[0] - px2[0];
+			deltay1 = px1[1] - px2[1];
+			deltay2 = px3[1] - px2[1];
+			y0 = px2[1];
+			yf = px1[1];
+			x0 = px2[0];
+			xf = x0;
+			alfa1 = deltay1 / deltax1;
+			alfa2 = deltay2 / deltax2;
+			// System.out.println("ou aqui");
+		}
+
+		int incy = 1;
+		if (deltay1 < 0) {
+			incy *= -1;
+		}
+		if (y0 < 0)
+			y0 = 0;
+		if (yf > resY)
+			yf = resY;
+
+		for (y = y0; y < yf && y >= y0; y += incy) {
+			System.out.println("oi");
+			x0 = x0 + 1 / alfa1;
+			xf = xf + 1 / alfa2;
+			if (x0 > xf) {
+				double aux = xf;
+				xf = x0;
+				x0 = aux;
+			}
+			if (x0 < 0)
+				x0 = 0;
+			if (xf > resX)
+				xf = resX;
+			for (x = x0; x < xf; x += .05) {
+				float[] cor = { 1, 1, 1 };
+
+				matCor[(int) x][(int) y] = cor;
+				// doPhong();
+			}
+
+		}
 
 	}
 
@@ -456,6 +532,7 @@ public class GebaTeste implements GLEventListener {
 
 						if (zaprox < zbuffercamera[(int) x][(int) y]) {
 							doPhong();
+							System.out.println(" s");
 							matCor[(int) x][(int) y] = new float[] { 1, 1, 1 };
 						}
 
@@ -528,6 +605,7 @@ public class GebaTeste implements GLEventListener {
 				triangulos[i][j] = arq.readInt() - 1;
 			}
 		}
+
 	}
 
 	static void printNormals() {
