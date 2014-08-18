@@ -14,6 +14,12 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
+import org.la4j.LinearAlgebra;
+import org.la4j.linear.LinearSystemSolver;
+import org.la4j.matrix.sparse.CRSMatrix;
+import org.la4j.vector.Vector;
+import org.la4j.vector.dense.BasicVector;
+
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -228,20 +234,20 @@ public class FinalClass implements GLEventListener {
 		gl.glBegin(GL.GL_POINTS);
 		gl.glPointSize(40);
 
-		for (float x = 0; x < resX; x++) {
-			for (float y = 0; y < resY; y++) {
-				gl.glPointSize(6);
-				float red = x / resX;
-				float green = y / resY;
-				float blue = red * green;
-				matCor[(int) x][(int) y] = new float[] { red, green, blue };
-				gl.glColor3f(red, green, blue);
-				gl.glVertex2i((int) x, (int) y);
-			}
-		}
-		gl.glEnd();
+		// for (float x = 0; x < resX; x++) {
+		// for (float y = 0; y < resY; y++) {
+		// gl.glPointSize(6);
+		// float red = x / resX;
+		// float green = y / resY;
+		// float blue = red * green;
+		// matCor[(int) x][(int) y] = new float[] { red, green, blue };
+		// gl.glColor3f(red, green, blue);
+		// gl.glVertex2i((int) x, (int) y);
+		// }
+		// }
+		// gl.glEnd();
 
-		scanline();
+		scanline2();
 
 		gl.glBegin(GL.GL_POINTS);
 		for (int x = 0; x < resX; x++) {
@@ -263,18 +269,63 @@ public class FinalClass implements GLEventListener {
 		// for (int t = 0; t < Nt - 1; t++) {
 		// gl.glBegin(GL.GL_POINTS);
 		// for (int k = 0; k < 3; k++) {
-		// int[] a = matPointsInPixels[triangulos[t][k]];
+		// double[] a = matPointsInPixels[triangulos[t][k]];
 		// gl.glColor3f(1, 1, 1);
-		// double zoom = 10;
+		// double zoom = 1;
 		// gl.glVertex2d(a[0] / zoom, a[1] / zoom);
-		// //System.out.println(a[0]);
-		//
+		// // System.out.println(a[0]);
 		//
 		// gl.glEnd();
 		//
 		// }
-		//
+		// }
 
+	}
+
+	private void scanline2() {
+		for (int t = 0; t < triangulos.length; t++) {// para cada triangulo
+			double[] p1, p2, p3;
+			p1 = matPointsInPixels[triangulos[t][0]];
+			p2 = matPointsInPixels[triangulos[t][0]];
+			p3 = matPointsInPixels[triangulos[t][0]];
+			double deltax, deltay, deltal1, deltal2, xintersect;
+			double[] pontointersect;
+			deltax = p2[0] - p1[0];
+			deltay = p2[1] - p1[1];
+			if (deltay != 0) {
+				deltal1 = deltax / deltay;// calcula o delta da reta p1 a p2
+			} else {
+				deltal1 = 0;
+			}
+			deltax = p3[0] - p1[0];
+			deltay = p3[1] - p1[1];
+			if (deltay != 0) {
+				deltal2 = deltax / deltay;// calcula o delta da reta p1 a p2
+			} else {
+				deltal2 = 0;
+			}
+			pontointersect = new double[3];
+			pontointersect[1] = p2[1];// /o ponto de intersessao tem o mesmo y
+										// de p2
+			xintersect = p1[0] + ((p2[1] - p1[1]) / deltal2);
+			pontointersect[0] = xintersect;// o ponto de intercessao tem esse x
+
+			// é bom lancar umas threads aqui
+
+			scan(triangulos[t][0], triangulos[t][1], p1, p2, pontointersect);
+			scan(triangulos[t][1], triangulos[t][2], p2, p3, pontointersect);
+		}
+
+	}
+
+	public void scan(int a1, int a2, double[] px1, double[] px2, double[] px3) {
+		// a1 -e o indice do px1, a2 o do px2, px1 e px2 fazem parte do
+		// matPointToPixel. px3 é dado, pois foi calculado pelo split
+		
+		
+		
+		
+		
 	}
 
 	@Override
@@ -302,12 +353,15 @@ public class FinalClass implements GLEventListener {
 	public static double[] coefsBaricentricos(double[] P, double[] P1,
 			double[] P2, double[] P3) {
 		double x = P[0], y = P[1], x1 = P1[0], y1 = P1[1], x2 = P2[0], y2 = P2[1], x3 = P[0], y3 = P[1];
-		double u, v, w;
-		double denom = ((x1 - x3) * (y2 - y3) - (y1 - y3) * (x2 - x3));
-		u = ((y2 - y3) * (x - x3) - ((x3 - x2) * (y3 - y))) / denom;
-		v = (((y3 - y1) * (x - x3)) - ((x1 - x3) * (y3 - y))) / denom;
-		w = 1.0 - u - v;
-		return new double[] { u, v, w };
+		CRSMatrix a = new CRSMatrix(new double[][] { { x1, x2, x3 },
+				{ y1, y2, y3 }, { 1.0, 1.0, 1.0 } });
+		double[] b2 = { x, y, 1.0 };
+		BasicVector b = new BasicVector(b2);
+		LinearSystemSolver solver = a
+				.withSolver(LinearAlgebra.FORWARD_BACK_SUBSTITUTION);
+		Vector resp = solver.solve(b, LinearAlgebra.SPARSE_FACTORY);
+		return new double[] { resp.get(0), resp.get(1), resp.get(2) };
+
 	}
 
 	public void scanline() {
@@ -373,7 +427,9 @@ public class FinalClass implements GLEventListener {
 						// atualizar a matriz z-buffer, caso seja necassario
 						double zaprox = 0;
 						for (int i = 0; i < 3; i++) {
-							zaprox += pontos[indicepontos[i]][2];
+							// System.out.println(baricentricas[0]);
+							zaprox += pontos[indicepontos[i]][2]
+									+ baricentricas[i];
 						}
 
 						if (zaprox < zbuffercamera[(int) x][(int) y]) {
@@ -389,14 +445,37 @@ public class FinalClass implements GLEventListener {
 			}
 		}
 		// varre no segundo triangulo
-		for (int i = (int) pontosNatela[1][1]; i < pontosNatela[2][1]; i++) {
+		for (double y = pontosNatela[0][1]; y <= pontosNatela[1][1]; y++) {
 			posicaoInicio = posicaoInicio + inclinacaoP2P3;
 			posicaoFim = posicaoFim + inclinacaoP1P3;
 			int incremento = 1;
 			if (posicaoFim < posicaoInicio)
 				incremento *= -1;
-			for (double j = posicaoInicio; j <= posicaoFim; j += incremento) {
+			if (y > 0 && y < resY - 1) {
+				for (double x = posicaoInicio; x <= posicaoFim; x += incremento) {
+					// encontrar as coordenadas baricentricas para o triangulo
+					if (x >= 0 && x < resX - 1) {
+						double[] baricentricas = coefsBaricentricos(
+								new double[] { x, y }, pontosNatela[0],
+								pontosNatela[1], pontosNatela[2]);
+						// atualizar a matriz z-buffer, caso seja necassario
+						double zaprox = 0;
+						for (int i = 0; i < 3; i++) {
+							// System.out.println(baricentricas[0]);
+							zaprox += pontos[indicepontos[i]][2]
+									+ baricentricas[i];
+						}
 
+						if (zaprox < zbuffercamera[(int) x][(int) y]) {
+							doPhong();
+							matCor[(int) x][(int) y] = new float[] { 1, 1, 1 };
+						}
+
+						// aplicar phong,atualizando a matriz de cores, caso
+						// seja
+						// necessario(caso tenha atualizado o z-buffer)
+					}
+				}
 			}
 		}
 		// acha o ponto que intersecta as retas com maior e menor y
