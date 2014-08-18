@@ -31,7 +31,8 @@ public class Algb {
 
 	}
 
-	public static double prodEscalar(double[] a, double[] b) {// produto escalar a.b
+	public static double prodEscalar(double[] a, double[] b) {// produto escalar
+																// a.b
 		double resp = 0;
 		for (int i = 0; i < a.length; i++) {
 			resp += a[i] * b[i];
@@ -40,10 +41,11 @@ public class Algb {
 	}
 
 	public static double[] prodByEscalar(double escalar, double[] vetor) {
+		double[] k = new double[vetor.length];
 		for (int i = 0; i < vetor.length; i++) {
-			vetor[i] = escalar * vetor[i];
+			k[i] = escalar * vetor[i];
 		}
-		return vetor;
+		return k;
 	}
 
 	public static double[] prodVetorial(double[] a, double[] b) {

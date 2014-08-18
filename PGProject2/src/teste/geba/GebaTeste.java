@@ -279,17 +279,17 @@ public class GebaTeste implements GLEventListener {
 			}
 		}
 		gl.glEnd();
-
-		for (int i = 0; i < triangulos.length; i++) {
-			gl.glBegin(GL.GL_LINE_LOOP);
-			for (int j = 0; j < 3; j++) {
-				gl.glPointSize(20);
-				gl.glColor3f(1.f, 1.f, 1.f);
-				gl.glVertex2d(pontosInPixels[triangulos[i][j]][0],
-						pontosInPixels[triangulos[i][j]][1]);
-			}
-			gl.glEnd();
-		}
+		// triangulos da vaca
+		// for (int i = 0; i < triangulos.length; i++) {
+		// gl.glBegin(GL.GL_LINE_LOOP);
+		// for (int j = 0; j < 3; j++) {
+		// gl.glPointSize(20);
+		// gl.glColor3f(1.f, 1.f, 1.f);
+		// gl.glVertex2d(pontosInPixels[triangulos[i][j]][0],
+		// pontosInPixels[triangulos[i][j]][1]);
+		// }
+		// gl.glEnd();
+		// }
 		gl.glBegin(GL.GL_POINTS);
 		for (int i = 0; i < pontosInPlanoNormalizado.length; i++) {
 			gl.glPointSize(20);
@@ -329,8 +329,8 @@ public class GebaTeste implements GLEventListener {
 			deltay = px2[1] - px1[1];
 
 			if (deltay == 0) {// triangulo virado para baixo
-				scan(triangulos[t][0], triangulos[t][1], px1, px2, px3,
-						pontosInCamera[triangulos[t][2]]);
+				// scan(triangulos[t][0], triangulos[t][1], px1, px2, px3,
+				// pontosInCamera[triangulos[t][2]]);
 
 				scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2], 0,
 						false);
@@ -376,10 +376,10 @@ public class GebaTeste implements GLEventListener {
 
 					// é bom lancar umas threads aqui
 
-					scan(triangulos[t][0], triangulos[t][1], px1, px2,
-							pxIntersect, ptIntersect);
-					scan(triangulos[t][1], triangulos[t][2], px2, px3,
-							pxIntersect, ptIntersect);
+					// scan(triangulos[t][0], triangulos[t][1], px1, px2,
+					// pxIntersect, ptIntersect);
+					// scan(triangulos[t][1], triangulos[t][2], px2, px3,
+					// pxIntersect, ptIntersect);
 					scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
 							alfa, true);
 					scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
@@ -392,9 +392,13 @@ public class GebaTeste implements GLEventListener {
 
 	public static void scan2(int index1, int index2, int index3, double alfa,
 			boolean top) {
+		double[] px1 = pontosInPixels[index1];
+		double[] px2 = pontosInPixels[index2];
+		double[] px3 = Algb.soma(
+				Algb.prodByEscalar(alfa, pontosInPixels[index1]),
+				Algb.prodByEscalar(1 - alfa, pontosInPixels[index3]));
 
 		if (top) {
-
 			double invslope1 = (pontosInPixels[index2][0] - pontosInPixels[index1][0])
 					/ (pontosInPixels[index2][1] - pontosInPixels[index1][1]);
 			double invslope2 = (pontosInPixels[index3][0] - pontosInPixels[index1][0])
@@ -404,25 +408,59 @@ public class GebaTeste implements GLEventListener {
 			double curx2 = pontosInPixels[index1][0];
 			if (curx1 < 0)
 				curx1 = 0;
-			if (curx2 > resY)
-				curx2 = resY;
+			if (curx2 > resX)
+				curx2 = resX;
 
 			for (int y = (int) pontosInPixels[index1][1]; y <= pontosInPixels[index2][1]; y++) {
 				for (int x = (int) curx1; x <= curx2; x++) {
-					System.out.println(y);
-					matCor[x][y] = new float[] { .8f, .8f, .8f };
+					matCor[x][y] = new float[] { .4f, .8f, .4f };
 				}
 
 				curx1 += invslope1;
 				curx2 += invslope2;
 				if (curx1 < 0)
 					curx1 = 0;
-				if (curx2 > resY)
-					curx2 = resY;
-
+				if (curx2 > resX)
+					curx2 = resX;
 			}
 
 		} else {
+			System.out.println("oi");
+			double[] aux = px3;
+			px1 = px2;
+			px2 = px3;
+			px3 = pontosInPixels[index3];
+			if(px2[0]<px1[0]){
+				aux = px2;
+				px2 = px1;
+				px2 = aux;
+			}
+			double invslope1 = (px3[0] - px1[0]) / (px3[1] - px1[1]);
+			double invslope2 = (px3[0] - px2[0]) / (px3[1] - px2[1]);
+			double curx1 = px3[0];
+			double curx2 = px3[0];
+			int ymax = (int) px3[1];
+			int ymin = (int) px1[1];
+
+			if (ymax >= resY)
+				ymax = resY;
+			if (ymin < 0)
+				ymin = 0;
+
+			System.out.println(px3[0]  );
+			for (int y = ymax; y > ymin; y--) {
+
+				if (curx1 < 0)
+					curx1 = 0;
+				if (curx2 > resX)
+					curx2 = resX;
+				
+				for (double x =  curx1; x < curx2; x++) {
+					matCor[(int) x][y] = new float[] { .4f, .8f, .4f };
+				}
+				curx1 -= invslope1;
+				curx2 -= invslope2;
+			}
 
 		}
 	}
