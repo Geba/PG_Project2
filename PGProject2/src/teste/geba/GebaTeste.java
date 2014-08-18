@@ -328,8 +328,9 @@ public class GebaTeste implements GLEventListener {
 										// xintersect = px1[0] + ((px3[1] -
 										// px1[1]) / deltal2)*(pxIntersect[1] -
 										// px1[1]);
-				xintersect = px1[0] + ((px3[0] - px1[0]) / (px3[1] - px1[1]))* (px2[1] - px1[1]);
-				//pI.x = p1.x+ ((p3.x-p1.x)/(p3.y-p1.y))*(p2.y-p1.y) 
+				xintersect = px1[0] + ((px3[0] - px1[0]) / (px3[1] - px1[1]))
+						* (px2[1] - px1[1]);
+				// pI.x = p1.x+ ((p3.x-p1.x)/(p3.y-p1.y))*(p2.y-p1.y)
 				pxIntersect[0] = xintersect;// o ponto de intercessao tem
 											// esse x
 
@@ -337,15 +338,23 @@ public class GebaTeste implements GLEventListener {
 				alfax = (pxIntersect[0] - px1[0]) / (px3[0] - px1[0]);
 				alfay = (pxIntersect[1] - px1[1]) / (px3[1] - px1[1]);
 				alfa = 0;
-				if (alfax > alfay) {
+
+				if (alfax > alfay) {// os pontos podem estar na vertical ou na
+									// horizontal, em um desses casos, alfax ou
+									// alfay é zero, em qualquer outro caso,
+									// eles são
+									// iguais
+
 					alfa = alfax;
 				} else if (alfay != 0) {
 					alfa = alfay;
 				}
-				double[] ptIntersect = Algb.soma(Algb.prodByEscalar(alfa,
-						pontos[triangulos[t][0]]), Algb.prodByEscalar(
+				double[] ptIntersect = Algb.soma(Algb.prodByEscalar(alfa,pontos[triangulos[t][0]]), Algb.prodByEscalar(
 						(1 - alfa), pontos[triangulos[t][2]]));
 				// ponto em coordenadas de vista
+
+				
+				
 				// é bom lancar umas threads aqui
 
 				scan(triangulos[t][0], triangulos[t][1], px1, px2, pxIntersect,
