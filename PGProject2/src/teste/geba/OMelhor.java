@@ -382,7 +382,7 @@ public class OMelhor implements GLEventListener {
 	}
 
 	private static void phong(int x, int y, int t) {
-	
+double[] teste;	
 		double[] px1, px2, px3, P1, P2, P3, px = { x, y }, P, coef, normal;
 		int[] triangulo = triangulos[t];
 		float[] cor;
@@ -397,30 +397,35 @@ public class OMelhor implements GLEventListener {
 					Algb.prodByEscalar(coef[i], pontosInCamera[triangulo[i]]));
 
 		}
-		System.out.println(P[0]+" "+P[1]+" "+P[2]);
 		if (zbuffercamera[x][y] > P[2]) {// deve-se pintar
 			zbuffercamera[x][y] = P[2];
-			P = new double[3];
+			
 			
 			normal = new double[3];
 			for (int i = 0; i < 3; i++) {
 				normal = Algb.soma(normal,
 						Algb.prodByEscalar(coef[i], NormPontos[triangulo[i]]));
+				
 			}
-
 			cor = new float[3];
+			
 
 			for (int i = 0; i < 3; i++) {
 				cor[i] = 0;
 			}
 			normal = Algb.normalize(normal);// tenho a normal do ponto
+			
 			double[] L = Algb.normalize(Algb.sub(Plight, P));// tenho o vetor
 																// direcionado
 																// para a luz
 			
-			double[] V = Algb.sub(zero, P);
-			V = Algb.normalize(V);
-			if(Algb.prodEscalar(normal, V)<0)
+			
+			double[] VObservador = Algb.sub(zero, P);
+//			teste = P;
+//			System.out.println(teste[0]+" "+teste[1]+" "+teste[2]);
+//			
+			VObservador = Algb.normalize(VObservador);
+			if(Algb.prodEscalar(normal, VObservador)<0)
 				normal = Algb.sub(zero, normal);
 			double N_L = Algb.prodEscalar(normal, L);
 			double[] R = new double[3];
@@ -429,6 +434,7 @@ public class OMelhor implements GLEventListener {
 			oi = Algb.sub(zero, oi);
 			R = Algb.soma(normal, oi);
 			R = Algb.normalize(R);
+			
 			
 //			R[0] = 2
 //					* (Algb.prodEscalar(L, N) / (Algb.getNorma(L) * Algb
@@ -441,12 +447,13 @@ public class OMelhor implements GLEventListener {
 //							.getNorma(N))) * (N[2] - L[2]);
 //			R = Algb.normalize(R);
 			
-			double[] VxR = Algb.prodVetorial(V, R);
+			double[] VxR = Algb.prodVetorial(VObservador, R);
+			
 			for (int i = 0; i < 3; i++) {
 				float cor1 = (float) (Ka*Ia[i]+ Il[i]);
 				float ambiente = (float) (Ka*Ia[i]);
 				float difusa = (float) (Il[i]*Kd*N_L);
-				System.out.println(R[i]);
+				//System.out.println(R[i]);
 				float especular = (float)(Il[i]*Ks*(VxR[i]));
 //				System.out.println("ambiente: "+ambiente+" difusa: "+difusa+
 //			" especular :" +especular);
