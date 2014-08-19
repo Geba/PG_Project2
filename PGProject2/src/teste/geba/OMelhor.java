@@ -109,39 +109,61 @@ public class OMelhor implements GLEventListener {
 		}
 	}
 
-	static void calcularNormais() {
-		NormTriangulos = new double[Nt][3];
-		NormPontos = new double[Np][3];
-		for (int i = 0; i < triangulos.length; i++) {
-			double[] v1, v2, n;
-			int pA, pB, pC;
-			pA = triangulos[i][0];
-			pB = triangulos[i][1];
-			pC = triangulos[i][2];
-			// descobrir quais vetores pegar aqui
-			v1 = Algb.sub(pontos[pB], pontos[pA]);// calcula os dois vetores
-			v2 = Algb.sub(pontos[pC], pontos[pA]);// definidos pelos pontos do
-			// triangulo
-			n = Algb.prodVetorial(v1, v2);
-			if (Algb.prodEscalar(C, n) > 0) {
-				n = Algb.sub(zero, n);
-			}
+	
 
-			for (int j = 0; j <= 3; j++) {
-				NormTriangulos[i] = n;// salva a normal no array d normais de
-				// triangulo
-				// soma essa normal no array de normal de vertices
-				NormPontos[pA] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
-				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
-			}
-			// System.out.println(i);
-		}
-		for (int i = 0; i < NormPontos.length; i++) {
-			NormPontos[i] = Algb.normalize(NormPontos[i]);
-		}
+    static void calcularNormais() {
+     
+                    NormTriangulos = new double[Nt][3];
+                    NormPontos = new double[Np][3];
+                    for (int t = 0; t < triangulos.length; t++) {
+                            double[] v1, v2, n;
+                            int pA, pB, pC;
+                            pA = triangulos[t][0];
+                            pB = triangulos[t][1];
+                            pC = triangulos[t][2];
+                            int[] indicepontos = { pA, pB, pC };
+                            // descobrir quais vetores pegar aqui
+                            v1 = Algb.sub(pontosInCamera[pB], pontosInCamera[pA]);// calcula os
+                                                                                                                                            // dois
+                                                                                                                                            // vetores
+                            v2 = Algb.sub(pontosInCamera[pC], pontosInCamera[pA]);// definidos
+                                                                                                                                            // pelos
+                                                                                                                                            // pontos do
+                            // triangulo
+                            n = Algb.prodVetorial(v1, v2);// calcula a normal
+                            double[] baricentro = new double[3];// calcula o baricentro do
+                                                                                                    // triangulo
+                            for (int i = 0; i < 3; i++) {
+                                    baricentro = Algb.soma(baricentro, Algb.prodByEscalar(
+                                                    (1.0 / 3.0), pontosInCamera[indicepontos[i]]));
+                            }
+                            double[] toObserv = Algb.sub(zero, baricentro);// vetor do
+                                                                                                                            // baricentro para
+                                                                                                                            // observadr
+                            toObserv = Algb.normalize(toObserv);
+                            n = Algb.normalize(n);
+     
+                            // System.out.println(Algb.VectorToString(n));
+                            double prodescalar = Algb.prodEscalar(toObserv, n);
+                            if (prodescalar < 0) {
+                                    n = Algb.sub(zero, n);
+                            }
+                            NormTriangulos[t] = n;// salva a normal no array d normais de
+                            // triangulo
+                            // soma essa normal no array de normal de vertices
+                            NormPontos[pA] = Algb.soma(NormPontos[pA], n);
+                            NormPontos[pB] = Algb.soma(NormPontos[pB], n);
+                            NormPontos[pC] = Algb.soma(NormPontos[pC], n);
+     
+                            // System.out.println(i);
+                    }
+                    for (int i = 0; i < NormPontos.length; i++) {
+                            NormPontos[i] = Algb.normalize(NormPontos[i]);
+                    }
+     
+            }
 
-	}
+
 
 	public static void main(String[] args) {
 
@@ -160,7 +182,6 @@ public class OMelhor implements GLEventListener {
 		N = Algb.normalize(N);
 
 		matrizMudBase = getMudBase(U, V, N);
-		calcularNormais();
 		pontosInCamera = getNewCoordinates(pontos, matrizMudBase, C);
 		Plight = getNewCoordinates(Plight, matrizMudBase, C);
 		// ok até aqui
@@ -169,7 +190,7 @@ public class OMelhor implements GLEventListener {
 				zbuffercamera[x][y] = Double.MAX_VALUE - 1;
 			}
 		}
-
+		calcularNormais();
 		pontosInPlanoNormalizado = projetar2d(pontosInCamera);
 		ordenarTriangulos();
 		Frame frame = new Frame("AWT Window Test");
@@ -244,11 +265,11 @@ public class OMelhor implements GLEventListener {
 		for (float x = 0; x < resX; x++) {
 			for (float y = 0; y < resY; y++) {
 				gl.glPointSize(6);
-				// float red = 1;
-				// float green = (230.0f / 255.0f);
-				// float blue = 0;
-				// matCor[(int) x][(int) y] = new float[] { red, green, blue };
-				// gl.glColor3f(red, green, blue);
+				 float red = 1;
+				 float green = (230.0f / 255.0f);
+				 float blue = 0;
+				//matCor[(int) x][(int) y] = new float[] { red, green, blue };
+				 gl.glColor3f(red, green, blue);
 				gl.glVertex2i((int) x, (int) y);
 			}
 		}
@@ -294,11 +315,11 @@ public class OMelhor implements GLEventListener {
 		double deltaXMax, deltaYMax, deltaYMin, deltaXMin, posicaoRelativa, deltaXMed, deltaYMed, coefAng31, b, x;
 		double[] pxNovo = new double[2];// ponto de corte dos triangulo em 2;
 		double[] aux;
+		double[] px1, px2, px3;
 
 		for (int t = 0; t < triangulos.length; t++) {// para cada triangulo
 
 			// colocando cada triangulo em uma variavel
-			double[] px1, px2, px3;
 			px1 = pontosInPixels[triangulos[t][0]];
 			px2 = pontosInPixels[triangulos[t][1]];
 			px3 = pontosInPixels[triangulos[t][2]];
@@ -311,7 +332,8 @@ public class OMelhor implements GLEventListener {
 			deltaXMed = px3[0] - px1[0];
 			deltaYMed = px3[1] - px1[1];
 
-			if (deltaYMax == 0) {
+			if (Math.round(deltaYMax) == 0) {
+
 				if (deltaXMax < 0) {
 					aux = px1;
 					px1 = px2;
@@ -320,7 +342,7 @@ public class OMelhor implements GLEventListener {
 				scanDOWN(px1, px2, px3, t);
 			} else {
 
-				if (deltaYMin == 0) {
+				if (Math.round(deltaYMin) == 0) {
 					if (deltaXMin < 0) {
 						aux = px2;
 						px2 = px3;
@@ -330,26 +352,46 @@ public class OMelhor implements GLEventListener {
 				} else {
 					posicaoRelativa = px2[0] - px3[0];
 					if (posicaoRelativa > 0) {
-						coefAng31 = deltaYMed / deltaXMed; // descobre o
-															// coefAngular
+						
+						if (Math.round(deltaXMed) == 0) {
+							coefAng31 = 0;
+						} else {
+							coefAng31 = deltaYMed / deltaXMed;
+						} // descobre o
+							// coefAngular
 						b = px1[1] - coefAng31 * px1[0]; // descobre o b da reta
 															// de px3 e px1
-						x = (px2[1] - b) / coefAng31;
+						if (Math.round(coefAng31) == 0) {
+							x = px1[0];
+						} else {
+							x = (px2[1] - b) / coefAng31;
+						}
 						pxNovo[0] = x;
 						pxNovo[1] = px2[1];
 
 						scanUP(px1, pxNovo, px2, t);
 						scanDOWN(pxNovo, px2, px3, t);
+
 					} else {
-						coefAng31 = deltaYMed / deltaXMed; // descobre o
-															// coefAngular
+						if (Math.round(deltaXMed) == 0) {
+							coefAng31 = 0;
+						} else {
+							coefAng31 = deltaYMed / deltaXMed;
+						}// descobre o
+							// coefAngular
 						b = px1[1] - coefAng31 * px1[0]; // descobre o b da reta
 															// de px3 e px1
-						x = (px2[1] - b) / coefAng31;
+						if(coefAng31==0){
+							x = px1[0];
+						}
+						else
+						x = (px3[1] - b) / coefAng31;
+						
 						pxNovo[0] = x;
 						pxNovo[1] = px2[1];
 						scanUP(px1, px2, pxNovo, t);
 						scanDOWN(px2, pxNovo, px3, t);
+
 					}
 				}
 			}
@@ -381,121 +423,124 @@ public class OMelhor implements GLEventListener {
 		}
 	}
 
-	private static void phong(int x, int y, int t) {
-double[] teste;	
-		double[] px1, px2, px3, P1, P2, P3, px = { x, y }, P, coef, normal;
-		int[] triangulo = triangulos[t];
-		float[] cor;
-		px1 = pontosInPixels[triangulo[0]];
-		px2 = pontosInPixels[triangulo[1]];
-		px3 = pontosInPixels[triangulo[2]];
-		coef = coefsBaricentricos(px, px1, px2, px3);
-		//System.out.println("coefs" + coef[0]+ " "+coef[1]+ " "+coef[2]+ " ");
-		P = new double[3];
-		for (int i = 0; i < 3; i++) {
-			P = Algb.soma(P,
-					Algb.prodByEscalar(coef[i], pontosInCamera[triangulo[i]]));
-
-		}
-		if (zbuffercamera[x][y] > P[2]) {// deve-se pintar
-			zbuffercamera[x][y] = P[2];
-			
-			
-			normal = new double[3];
-			for (int i = 0; i < 3; i++) {
-				normal = Algb.soma(normal,
-						Algb.prodByEscalar(coef[i], NormPontos[triangulo[i]]));
-				
-			}
-			cor = new float[3];
-			
-
-			for (int i = 0; i < 3; i++) {
-				cor[i] = 0;
-			}
-			normal = Algb.normalize(normal);// tenho a normal do ponto
-			
-			double[] L = Algb.normalize(Algb.sub(Plight, P));// tenho o vetor
-																// direcionado
-																// para a luz
-			
-			
-			double[] VObservador = Algb.sub(zero, P);
-//			teste = P;
-//			System.out.println(teste[0]+" "+teste[1]+" "+teste[2]);
-//			
-			VObservador = Algb.normalize(VObservador);
-			if(Algb.prodEscalar(normal, VObservador)<0)
-				normal = Algb.sub(zero, normal);
-			double N_L = Algb.prodEscalar(normal, L);
-			double[] R = new double[3];
-			double[] projLN = Algb.projec(L,  normal); 
-			double [] oi = Algb.sub(L, projLN);
-			oi = Algb.sub(zero, oi);
-			R = Algb.soma(normal, oi);
-			R = Algb.normalize(R);
-			
-			
-//			R[0] = 2
-//					* (Algb.prodEscalar(L, N) / (Algb.getNorma(L) * Algb
-//							.getNorma(N))) * (N[0] - L[0]);
-//			R[1] = 2
-//					* (Algb.prodEscalar(L, N) / (Algb.getNorma(L) * Algb
-//							.getNorma(N))) * (N[1] - L[1]);
-//			R[2] = 2
-//					* (Algb.prodEscalar(L, N) / (Algb.getNorma(L) * Algb
-//							.getNorma(N))) * (N[2] - L[2]);
-//			R = Algb.normalize(R);
-			
-			double[] VxR = Algb.prodVetorial(VObservador, R);
-			
-			for (int i = 0; i < 3; i++) {
-				float cor1 = (float) (Ka*Ia[i]+ Il[i]);
-				float ambiente = (float) (Ka*Ia[i]);
-				float difusa = (float) (Il[i]*Kd*N_L);
-				//System.out.println(R[i]);
-				float especular = (float)(Il[i]*Ks*(VxR[i]));
-//				System.out.println("ambiente: "+ambiente+" difusa: "+difusa+
-//			" especular :" +especular);
-				cor[i] = (float) (Ka * Ia[i] + Il[i]* (Kd * N_L + Ks * (VxR[i])));
-			}
-			matCor[x][y] = cor;
-			//matCor[x][y] = new float[]{1.f, 1.f, 1.f,};
-		}
-
-	}
-
 	public static void scanDOWN(double[] px1, double[] px2, double[] px3, int t) {
-
 		double invslope1 = (px3[0] - px1[0]) / (px3[1] - px1[1]);
 		double invslope2 = (px3[0] - px2[0]) / (px3[1] - px2[1]);
 		double curx1 = px3[0];
 		double curx2 = px3[0];
-		int ymax = (int) px3[1];
-		int ymin = (int) px1[1];
+		int ymax = (int) Math.round(px3[1]);
+		int ymin = (int) Math.round(px1[1]);
 
 		if (ymax >= resY)
 			ymax = resY;
 		if (ymin < 0)
 			ymin = 0;
 
-		for (int y = ymax; y > ymin; y--) {
+		for (double y = ymax; y > ymin; y--) {
 
 			if (curx1 < 0)
 				curx1 = 0;
 			if (curx2 > resX)
 				curx2 = resX;
-
-			for (double x = curx1; x < curx2; x++) {
+			for (double x = curx1; x <= curx2; x++) {
 				if (x > 0 && x < resX && y > 0 && y < resY) {
-
-					phong((int) x, y, t);
+					phong(x, y, t);
 				}
 			}
+
 			curx1 -= invslope1;
 			curx2 -= invslope2;
+			if (curx1 < 0)
+				curx1 = 0;
+			if (curx2 > resX)
+				curx2 = resX;
 		}
 	}
+
+	
+
+    private static void phong(double x1, double y2, int t) {
+    				int x = (int)Math.round(x1);
+    				int y = (int)Math.round(y2);
+                    double[] teste;
+                    double[] px1, px2, px3, P1, P2, P3, px = { x1, y2 }, P, coef, normal;
+                    int[] triangulo = triangulos[t];
+                    float[] cor;
+                    px1 = pontosInPixels[triangulo[0]];
+                    px2 = pontosInPixels[triangulo[1]];
+                    px3 = pontosInPixels[triangulo[2]];
+                    coef = coefsBaricentricos(px, px1, px2, px3);
+                     //System.out.println("coefs" + coef[0]+ " "+coef[1]+ " "+coef[2]+ " ");
+                    P = new double[3];
+                    for (int i = 0; i < 3; i++) {
+                            P = Algb.soma(P,
+                                            Algb.prodByEscalar(coef[i], pontosInCamera[triangulo[i]]));
+     
+                    }
+                    
+                    if (zbuffercamera[x][y] > P[2]) {// deve-se pintar
+                            zbuffercamera[x][y] = P[2];
+     
+                            normal = new double[3];
+                            for (int i = 0; i < 3; i++) {
+                                    normal = Algb.soma(normal,
+                                                    Algb.prodByEscalar(coef[i], NormPontos[triangulo[i]]));
+     
+                            }
+                            cor = new float[3];
+     
+                            for (int i = 0; i < 3; i++) {
+                                    cor[i] = 0;
+                            }
+                            normal = Algb.normalize(normal);// tenho a normal do ponto
+     
+                            double[] light = Algb.normalize(Algb.sub(Plight, P));// tenho o vetor
+                                                                                                                                    // direcionado
+                                                                                                                                    // para a luz
+     
+                            double[] VObservador = Algb.sub(zero, P);
+                            // teste = P;
+                            // System.out.println(teste[0]+" "+teste[1]+" "+teste[2]);
+                            //
+                            VObservador = Algb.normalize(VObservador);
+                            if (Algb.prodEscalar(normal, VObservador) < 0)
+                                    normal = Algb.sub(zero, normal);
+                            double N_L = Algb.prodEscalar(normal, light);
+                            double[] R = new double[3];
+                            R = Algb.sub(Algb.prodByEscalar(2*Algb.prodEscalar(light,normal), normal), light);
+                            //R = 2*(n.l)n - l
+    //                     
+    //                      R[0] = 2
+    //                       * (Algb.prodEscalar(light, N) / (Algb.getNorma(light) * Algb
+    //                       .getNorma(N))) * (N[0] - light[0]);
+    //                       R[1] = 2
+    //                       * (Algb.prodEscalar(light, N) / (Algb.getNorma(light) * Algb
+    //                       .getNorma(N))) * (N[1] - light[1]);
+    //                       R[2] = 2
+    //                       * (Algb.prodEscalar(light, N) / (Algb.getNorma(light) * Algb
+    //                       .getNorma(N))) * (N[2] - light[2]);
+    //                       R = Algb.normalize(R);
+     
+                            double V_R = Algb.prodEscalar(R, VObservador);
+     
+                            for (int i = 0; i < 3; i++) {
+                                    float cor1 = (float) (Ka * Ia[i] + Il[i]);
+                                    float ambiente = (float) (Ka * Ia[i]);
+                                    float difusa = (float) Math.max((Il[i] * Kd * N_L), 0);
+                                    // System.out.println(R[i]);
+                                    float especular = (float) (Il[i] * Ks * V_R);
+                                    // System.out.println("ambiente: "+ambiente+" difusa: "+difusa+
+                                    // " especular :" +especular);
+                                    cor[i] = (float) (ambiente+difusa+especular);
+                            }
+                           
+                            matCor[x][y] = cor;
+                            // matCor[x][y] = new float[]{1.f, 1.f, 1.f,};
+                    }
+     
+            }
+
+
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
@@ -519,19 +564,29 @@ double[] teste;
 
 	}
 
-	public static double[] coefsBaricentricos(double[] P, double[] P1,
-			double[] P2, double[] P3) {
-		double x = P[0], y = P[1], x1 = P1[0], y1 = P1[1], x2 = P2[0], y2 = P2[1], x3 = P[0], y3 = P[1];
-		CRSMatrix a = new CRSMatrix(new double[][] { { x1, x2, x3 },
-				{ y1, y2, y3 }, { 1.0, 1.0, 1.0 } });
-		double[] b2 = { x, y, 1.0 };
-		BasicVector b = new BasicVector(b2);
-		LinearSystemSolver solver = a
-				.withSolver(LinearAlgebra.FORWARD_BACK_SUBSTITUTION);
-		Vector resp = solver.solve(b, LinearAlgebra.SPARSE_FACTORY);
-		return new double[] { resp.get(0), resp.get(1), resp.get(2) };
+	
 
-	}
+    public static double[] coefsBaricentricos(double[] P, double[] P1,
+                    double[] P2, double[] P3) {
+                    double x = P[0], y = P[1], x1 = P1[0], y1 = P1[1], x2 = P2[0], y2 = P2[1], x3 = P[0], y3 = P[1];
+                    double[] PP1 = Algb.sub(P, P1);
+                    double[] P2P1 = Algb.sub(P2, P1);
+                    double[] P2P3 = Algb.sub(P2, P3);
+                    double[] PP3 = Algb.sub(P, P3);
+                    double[] P3P1 = Algb.sub(P3, P1);
+                    double [] vPP1 = new double[]{PP1[0], PP1[1], 0};
+                    double [] vP2P1 = new double[]{P2P1[0], P2P1[1], 0};
+                    double [] vP2P3 = new double[]{P2P3[0], P2P3[1], 0};
+                    double [] vPP3 = new double[]{PP3[0], PP3[1], 0};
+                    double [] vP3P1 = new double[]{P3P1[0], P3P1[1], 0};
+                   
+                    double A1 = Algb.getNorma(Algb.prodVetorial(vPP1, vP2P1));
+                    double A2 = Algb.getNorma(Algb.prodVetorial(vPP3, vP2P3));
+                    double A3 = Algb.getNorma(Algb.prodVetorial(vPP1, vP3P1));
+                    double total = A1 + A2 + A3;
+                    return new double[] { (A2 / total), (A3 / total), (A1 / total) };
+            }
+
 
 	static void lerObjetos() {
 		Arquivo arq = new Arquivo("objeto.txt", "lixoObj.txt");
@@ -590,36 +645,37 @@ double[] teste;
 		System.out.println("Pl :" + Plight[0] + " " + Plight[1] + " "
 				+ Plight[2]);
 	}
-//
-//	static void lerAtributos() {
-//		arq = new Arquivo("atributos.txt", "lixoAtr.txt");
-//		Ia[0] = arq.readInt();
-//		Ia[1] = arq.readInt();
-//		Ia[2] = arq.readInt();
-//		Ka = arq.readDouble();
-//		Od[0] = arq.readDouble() / 255.0f;
-//		Od[1] = arq.readDouble() / 255.0f;
-//		Od[2] = arq.readDouble() / 255.0f;
-//		Kd = arq.readDouble();
-//		Ks = arq.readDouble();
-//		n = arq.readDouble();
-//		Il[0] = arq.readDouble() / 255.0f;
-//		Il[1] = arq.readDouble() / 255.0f;
-//		Il[2] = arq.readDouble() / 255.0f;
-//		Plight[0] = arq.readDouble();
-//		Plight[1] = arq.readDouble();
-//		Plight[2] = arq.readDouble();
-//
-//	}
+
+	//
+	// static void lerAtributos() {
+	// arq = new Arquivo("atributos.txt", "lixoAtr.txt");
+	// Ia[0] = arq.readInt();
+	// Ia[1] = arq.readInt();
+	// Ia[2] = arq.readInt();
+	// Ka = arq.readDouble();
+	// Od[0] = arq.readDouble() / 255.0f;
+	// Od[1] = arq.readDouble() / 255.0f;
+	// Od[2] = arq.readDouble() / 255.0f;
+	// Kd = arq.readDouble();
+	// Ks = arq.readDouble();
+	// n = arq.readDouble();
+	// Il[0] = arq.readDouble() / 255.0f;
+	// Il[1] = arq.readDouble() / 255.0f;
+	// Il[2] = arq.readDouble() / 255.0f;
+	// Plight[0] = arq.readDouble();
+	// Plight[1] = arq.readDouble();
+	// Plight[2] = arq.readDouble();
+	//
+	// }
 	static void lerAtributos() {
 		arq = new Arquivo("atributos.txt", "lixoAtr.txt");
 		Plight[0] = arq.readDouble();
 		Plight[1] = arq.readDouble();
 		Plight[2] = arq.readDouble();
 		Ka = arq.readDouble();
-		Ia[0] = arq.readDouble()/255.0f;
-		Ia[1] = arq.readDouble()/255.0f;
-		Ia[2] = arq.readDouble()/255.0f;
+		Ia[0] = arq.readDouble() / 255.0f;
+		Ia[1] = arq.readDouble() / 255.0f;
+		Ia[2] = arq.readDouble() / 255.0f;
 		Kd = arq.readDouble();
 		Od[0] = arq.readDouble() / 255.0f;
 		Od[1] = arq.readDouble() / 255.0f;
