@@ -79,16 +79,24 @@ public class GebaTeste implements GLEventListener {
 			pontos2d[i][0] = (d / hx) * (pontosTrans[i][0] / pontosTrans[i][2]);
 			pontos2d[i][1] = (d / hy) * (pontosTrans[i][1] / pontosTrans[i][2]);
 
-			pontosInPixels[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
-			pontosInPixels[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
 			// pontos2d[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
 			// pontos2d[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
 		}
 		return pontos2d;
 	}
 
+	public static double[][] projetarnaTela(double[][] pontos2d) {
+		double[][] pntsInPixels = new double[pontos2d.length][2];
+		for (int i = 0; i < pontos2d.length; i++) {
+			pntsInPixels[i][0] = (pontos2d[i][0] + 1) / 2 * (resX - 1);
+			pntsInPixels[i][1] = (1 - pontos2d[i][1]) / 2 * (resY - 1);
+		}
+		return pntsInPixels;
+	}
+
 	static void ordenarTriangulos() {
 		for (int t = 0; t < triangulos.length; t++) {
+					
 			if (pontosInCamera[triangulos[t][1]][1] < pontosInCamera[triangulos[t][2]][1]) {
 				int aux = triangulos[t][2];
 				triangulos[t][2] = triangulos[t][1];
@@ -133,7 +141,7 @@ public class GebaTeste implements GLEventListener {
 				NormPontos[pB] = Algb.soma(NormPontos[pA], n);
 				NormPontos[pC] = Algb.soma(NormPontos[pA], n);
 			}
-			// System.out.println(i);
+			// //System.out.println(i);
 		}
 		for (int i = 0; i < NormPontos.length; i++) {
 			NormPontos[i] = Algb.normalize(NormPontos[i]);
@@ -177,7 +185,10 @@ public class GebaTeste implements GLEventListener {
 		teste();
 
 		pontosInPlanoNormalizado = projetar2d(pontosInCamera);
+		pontosInPixels = projetarnaTela(pontosInPlanoNormalizado);
+
 		ordenarTriangulos();
+
 		Frame frame = new Frame("AWT Window Test");
 		frame.setSize(resX, resY);
 		frame.add(canvas);
@@ -199,8 +210,8 @@ public class GebaTeste implements GLEventListener {
 
 	private static void printPontosTrans() {
 		for (int i = 0; i < Np; i++) {
-			System.out.println(pontosInCamera[i][0] + " "
-					+ pontosInCamera[i][1] + " " + pontosInCamera[i][2]);
+			// System.out.println(pontosInCamera[i][0] + " "
+			// + pontosInCamera[i][1] + " " + pontosInCamera[i][2]);
 		}
 
 	}
@@ -233,9 +244,9 @@ public class GebaTeste implements GLEventListener {
 		for (int i = 0; i < pontos.length; i++) {
 			double[] ponto = pontos[i];
 			ponto = Algb.sub(ponto, camera);
-			// System.out.println(Algeb.VectorToString(ponto));
+			// //System.out.println(Algeb.VectorToString(ponto));
 			ponto = Algb.multMatrizVetor(mudBase, ponto);
-			// System.out.println(ponto[0]);
+			// //System.out.println(ponto[0]);
 			retorno[i] = ponto;
 		}
 		return retorno;
@@ -306,7 +317,7 @@ public class GebaTeste implements GLEventListener {
 		// gl.glColor3f(1, 1, 1);
 		// double zoom = 1;
 		// gl.glVertex2d(a[0] / zoom, a[1] / zoom);
-		// // System.out.println(a[0]);
+		// // //System.out.println(a[0]);
 		//
 		// gl.glEnd();
 		//
@@ -328,77 +339,125 @@ public class GebaTeste implements GLEventListener {
 			deltax = px2[0] - px1[0];
 			deltay = px2[1] - px1[1];
 
-			if (deltay == 0) {// triangulo virado para baixo
-				// scan(triangulos[t][0], triangulos[t][1], px1, px2, px3,
-				// pontosInCamera[triangulos[t][2]]);
+			coefAng1 = deltax / deltay;// calcula o delta da reta p1 a p2
+			deltax = px3[0] - px1[0];
+			deltay = px3[1] - px1[1];
+			coefAngl2 = deltax / deltay;// calcula o delta da reta p1 a p3
+			pxIntersect = new double[3];
+			pxIntersect[1] = px2[1];// /o ponto de intersessao tem o// mesmo
+									// y// de p2
+									// xintersect = px1[0] + ((px3[1] -
+									// px1[1]) / deltal2)*(pxIntersect[1] -
+									// px1[1]);
 
-				scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2], 0,
-						false);
-			} else {
-				coefAng1 = deltax / deltay;// calcula o delta da reta p1 a p2
-				deltax = px3[0] - px1[0];
-				deltay = px3[1] - px1[1];
-				coefAngl2 = deltax / deltay;// calcula o delta da reta p1 a p3
-				pxIntersect = new double[3];
-				pxIntersect[1] = px2[1];// /o ponto de intersessao tem o// mesmo
-										// y// de p2
-										// xintersect = px1[0] + ((px3[1] -
-										// px1[1]) / deltal2)*(pxIntersect[1] -
-										// px1[1]);
-				xintersect = px1[0] + ((px3[0] - px1[0]) / (px3[1] - px1[1]))
-						* (px2[1] - px1[1]);
-				// pI.x = p1.x+ ((p3.x-p1.x)/(p3.y-p1.y))*(p2.y-p1.y)
-				pxIntersect[0] = xintersect;// o ponto de intercessao tem
-											// esse x
+			xintersect = px1[0] + ((px3[0] - px1[0]) / (px3[1] - px1[1]))
+					* (px2[1] - px1[1]);
+			// pI.x = p1.x+ ((p3.x-p1.x)/(p3.y-p1.y))*(p2.y-p1.y)
+			pxIntersect[0] = xintersect;// o ponto de intercessao tem
+										// esse x
 
-				double alfax, alfay, alfa;
-				alfax = (pxIntersect[0] - px1[0]) / (px3[0] - px1[0]);
-				alfay = (pxIntersect[1] - px1[1]) / (px3[1] - px1[1]);
-				alfa = 0;
-				if (alfax != 0 && alfay != 0) {
-					if (alfax > alfay) {// os pontos podem estar na vertical ou
-										// na
-										// horizontal, em um desses casos, alfax
-										// ou
-										// alfay é zero, em qualquer outro caso,
-										// eles são
-										// iguais
+			double alfax, alfay, alfa;
+			alfax = (pxIntersect[0] - px1[0]) / (px3[0] - px1[0]);
+			alfay = (pxIntersect[1] - px1[1]) / (px3[1] - px1[1]);
+			alfa = 0;
+			if (alfax != 0 && alfay != 0) {
+				if (alfax > alfay) {// os pontos podem estar na vertical ou
+									// na
+									// horizontal, em um desses casos, alfax
+									// ou
+									// alfay é zero, em qualquer outro caso,
+									// eles são
+									// iguais
 
-						alfa = alfax;
-					} else if (alfay != 0) {
-						alfa = alfay;
-					}
-					double[] ptIntersect = Algb.soma(Algb.prodByEscalar(alfa,
-							pontosInCamera[triangulos[t][0]]), Algb
-							.prodByEscalar((1 - alfa),
-									pontosInCamera[triangulos[t][2]]));
-					// ponto em coordenadas de vista
-
-					// é bom lancar umas threads aqui
-
-					// scan(triangulos[t][0], triangulos[t][1], px1, px2,
-					// pxIntersect, ptIntersect);
-					// scan(triangulos[t][1], triangulos[t][2], px2, px3,
-					// pxIntersect, ptIntersect);
-					scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
-							alfa, true);
-					scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
-							alfa, false);
+					alfa = alfax;
+				} else if (alfay != 0) {
+					alfa = alfay;
 				}
 
+				// ponto em coordenadas de vista
+
+				// é bom lancar umas threads aqui
+
+				// scan(triangulos[t][0], triangulos[t][1], px1, px2,
+				// pxIntersect, ptIntersect);
+				// scan(triangulos[t][1], triangulos[t][2], px2, px3,
+				// pxIntersect, ptIntersect);
+				// System.out.println("t: " + t);
+				scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
+						alfa, true, t);
+				scan2(triangulos[t][0], triangulos[t][1], triangulos[t][2],
+						alfa, false, t);
 			}
+
 		}
 	}
 
-	public static void scan2(int index1, int index2, int index3, double alfa,
-			boolean top) {
+	private static void scan2Up(int index1, int index2, int index3, double alfa) {
+
 		double[] px1 = pontosInPixels[index1];
 		double[] px2 = pontosInPixels[index2];
-		double[] px3 = Algb.soma(
-				Algb.prodByEscalar(alfa, pontosInPixels[index1]),
-				Algb.prodByEscalar(1 - alfa, pontosInPixels[index3]));
+		double[] px3 = pontosInPixels[index3];
 
+		double a1 = (px3[0] - px1[0]) / (px3[1] - px1[0]);
+		// double a2 = (v[2].x - v[1].x) / (v[2].y - px2[1]);
+		double xMin = px3[0];
+		double xMax = px2[0];
+
+		px1 = pontosInPixels[index1];
+		px2 = pontosInPixels[index2];
+		px3 = Algb.soma(Algb.prodByEscalar(alfa, pontosInPixels[index1]),
+				Algb.prodByEscalar(1 - alfa, pontosInPixels[index3]));
+		double invslope1 = (pontosInPixels[index2][0] - pontosInPixels[index1][0])
+				/ (pontosInPixels[index2][1] - pontosInPixels[index1][1]);
+		double invslope2 = (pontosInPixels[index3][0] - pontosInPixels[index1][0])
+				/ (pontosInPixels[index3][1] - pontosInPixels[index1][1]);
+
+		double curx1 = pontosInPixels[index1][0];
+		double curx2 = pontosInPixels[index1][0];
+		if (curx1 < 0)
+			curx1 = 0;
+		if (curx2 > resX)
+			curx2 = resX;
+
+		for (int y = (int) pontosInPixels[index1][1]; y <= pontosInPixels[index2][1]; y++) {
+			for (int x = (int) curx1; x <= curx2; x++) {
+				matCor[x][y] = new float[] { .4f, .8f, .4f };
+			}
+
+			curx1 += invslope1;
+			curx2 += invslope2;
+			if (curx1 < 0)
+				curx1 = 0;
+			if (curx2 > resX)
+				curx2 = resX;
+		}
+
+	}
+
+	private static void scan2up(int i, int j, int k, double alfa) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public static void scan2(int index1, int index2, int index3, double alfa,
+			boolean top, double t) {
+		// System.out.println(t+ " "+ top);
+		double[] px3;
+		double[] px2;
+		double[] px1;
 		if (top) {
+
+			px1 = pontosInPixels[index1];
+			px2 = pontosInPixels[index2];
+			px3 = Algb.soma(Algb.prodByEscalar(alfa, pontosInPixels[index1]),
+					Algb.prodByEscalar(1 - alfa, pontosInPixels[index3]));
+
+			if (px2[0] > px3[0]) {
+				double[] aux = px3;
+				px3 = px2;
+				px2 = px3;
+			}
+
 			double invslope1 = (pontosInPixels[index2][0] - pontosInPixels[index1][0])
 					/ (pontosInPixels[index2][1] - pontosInPixels[index1][1]);
 			double invslope2 = (pontosInPixels[index3][0] - pontosInPixels[index1][0])
@@ -425,16 +484,16 @@ public class GebaTeste implements GLEventListener {
 			}
 
 		} else {
-			System.out.println("oi");
-			double[] aux = px3;
-			px1 = px2;
-			px2 = px3;
+			// //System.out.println("oi");
+			px1 = pontosInPixels[index2];
+			px2 = Algb.soma(Algb.prodByEscalar(alfa, pontosInPixels[index1]),
+					Algb.prodByEscalar(1 - alfa, pontosInPixels[index3]));
 			px3 = pontosInPixels[index3];
-			if(px2[0]<px1[0]){
-				aux = px2;
-				px2 = px1;
-				px2 = aux;
-			}
+			// if(px1[0]>px2[0]){
+			// double [] aux = px2;
+			// px2 = px1;
+			// px1 = aux;
+			// }
 			double invslope1 = (px3[0] - px1[0]) / (px3[1] - px1[1]);
 			double invslope2 = (px3[0] - px2[0]) / (px3[1] - px2[1]);
 			double curx1 = px3[0];
@@ -447,15 +506,15 @@ public class GebaTeste implements GLEventListener {
 			if (ymin < 0)
 				ymin = 0;
 
-			System.out.println(px3[0]  );
+			// //System.out.println(px3[0]);
 			for (int y = ymax; y > ymin; y--) {
 
 				if (curx1 < 0)
 					curx1 = 0;
 				if (curx2 > resX)
 					curx2 = resX;
-				
-				for (double x =  curx1; x < curx2; x++) {
+
+				for (double x = curx1; x < curx2; x++) {
 					matCor[(int) x][y] = new float[] { .4f, .8f, .4f };
 				}
 				curx1 -= invslope1;
@@ -488,7 +547,7 @@ public class GebaTeste implements GLEventListener {
 			xf = x0;
 			alfa1 = deltay1 / deltax1;
 			alfa2 = deltay2 / deltax2;
-			// System.out.println("entrei aqui");
+			// //System.out.println("entrei aqui");
 		} else {// triangulo virado para baixo px1.y = px3.y
 			deltax1 = px1[0] - px2[0];
 			deltax2 = px3[0] - px2[0];
@@ -500,7 +559,7 @@ public class GebaTeste implements GLEventListener {
 			xf = x0;
 			alfa1 = deltay1 / deltax1;
 			alfa2 = deltay2 / deltax2;
-			// System.out.println("ou aqui");
+			// //System.out.println("ou aqui");
 		}
 
 		int incy = 1;
@@ -581,7 +640,7 @@ public class GebaTeste implements GLEventListener {
 			double[] p3 = pontosInPixels[triangulos[t][2]];
 			double[][] tnatela = { p1, p2, p3 };
 			Varrer(tnatela, triangulos[t]);
-			// System.out.println("oi");
+			// //System.out.println("oi");
 		}
 	}
 
@@ -634,14 +693,14 @@ public class GebaTeste implements GLEventListener {
 						// atualizar a matriz z-buffer, caso seja necassario
 						double zaprox = 0;
 						for (int i = 0; i < 3; i++) {
-							// System.out.println(baricentricas[0]);
+							// //System.out.println(baricentricas[0]);
 							zaprox += pontos[indicepontos[i]][2]
 									+ baricentricas[i];
 						}
 
 						if (zaprox < zbuffercamera[(int) x][(int) y]) {
 							doPhong();
-							System.out.println(" s");
+							// System.out.println(" s");
 							matCor[(int) x][(int) y] = new float[] { 1, 1, 1 };
 						}
 
@@ -669,7 +728,7 @@ public class GebaTeste implements GLEventListener {
 						// atualizar a matriz z-buffer, caso seja necassario
 						double zaprox = 0;
 						for (int i = 0; i < 3; i++) {
-							// System.out.println(baricentricas[0]);
+							// //System.out.println(baricentricas[0]);
 							zaprox += pontos[indicepontos[i]][2]
 									+ baricentricas[i];
 						}
@@ -721,35 +780,35 @@ public class GebaTeste implements GLEventListener {
 
 		for (int i = 0; i < NormTriangulos.length; i++) {
 			for (int j = 0; j < 3; j++) {
-				System.out.print(NormTriangulos[i][j] + " ");
+				// System.out.print(NormTriangulos[i][j] + " ");
 			}
-			System.out.println();
+			// System.out.println();
 		}
 	}
 
 	static void printObjetos() {
-		System.out.println("Np: " + Np + " Nt: " + Np);
+		// System.out.println("Np: " + Np + " Nt: " + Np);
 		for (int i = 0; i < Np; i++) {
 			for (int j = 0; j < 3; j++) {
-				System.out.print(pontos[i][j] + " ");
+				// System.out.print(pontos[i][j] + " ");
 			}
 		}
 		for (int i = 0; i < Nt; i++) {
 			for (int j = 0; j < 3; j++) {
-				System.out.println(triangulos[i][j] + " ");
+				// System.out.println(triangulos[i][j] + " ");
 			}
 		}
 	}
 
 	static void printAtributos() {
-		System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
-		System.out.println("Ka: " + Ka);
-		System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
-		System.out.println("Kd: " + Kd);
-		System.out.println("Ks: " + Ks);
-		System.out.println("n: " + n);
-		System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
-		System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
+		// System.out.println("Ia: " + Ia[0] + " " + Ia[1] + " " + Ia[2]);
+		// System.out.println("Ka: " + Ka);
+		// System.out.println("Od: " + Od[0] + " " + Od[1] + " " + Od[2]);
+		// System.out.println("Kd: " + Kd);
+		// System.out.println("Ks: " + Ks);
+		// System.out.println("n: " + n);
+		// System.out.println("Il :" + Il[0] + " " + Il[1] + " " + Il[2]);
+		// System.out.println("Pl :" + Pl[0] + " " + Pl[1] + " " + Pl[2]);
 	}
 
 	static void lerAtributos() {
@@ -790,10 +849,10 @@ public class GebaTeste implements GLEventListener {
 	}
 
 	static void printCamera() {
-		System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
-		System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
-		System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
-		System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
+		// System.out.println("C: " + C[0] + " " + C[1] + " " + C[2]);
+		// System.out.println("N: " + N[0] + " " + N[1] + " " + N[2]);
+		// System.out.println("V: " + V[0] + " " + V[1] + " " + V[2]);
+		// System.out.println("d: " + d + "\nhx: " + hx + "\nhy: " + hy);
 	}
 
 }

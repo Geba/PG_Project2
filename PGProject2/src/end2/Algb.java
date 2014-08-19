@@ -101,10 +101,11 @@ public class Algb {
 	public static double[] normalize(double[] v) {
 		double n = 0;
 		n = getNorma(v);
+		double[] v2 = v;
 		for (int i = 0; i < v.length; i++) {
-			v[i] = v[i] / n;
+			v2[i] = v2[i] / n;
 		}
-		return v;
+		return v2;
 	}
 
 	public static String VectorToString(double[] v) {
