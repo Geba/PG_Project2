@@ -677,9 +677,9 @@ public class OMelhor implements GLEventListener {
 		Ia[1] = arq.readDouble() / 255.0f;
 		Ia[2] = arq.readDouble() / 255.0f;
 		Kd = arq.readDouble();
-		Od[0] = arq.readDouble() / 255.0f;
-		Od[1] = arq.readDouble() / 255.0f;
-		Od[2] = arq.readDouble() / 255.0f;
+		Od[0] = arq.readDouble() ;
+		Od[1] = arq.readDouble() ;
+		Od[2] = arq.readDouble() ;
 		Ks = arq.readDouble();
 		Il[0] = arq.readDouble() / 255.0f;
 		Il[1] = arq.readDouble() / 255.0f;

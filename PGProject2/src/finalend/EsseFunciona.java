@@ -385,143 +385,117 @@ public class EsseFunciona implements GLEventListener {
 	}
 
 	private static void refresh() {
-		zbuffercamera = new double[resX][resY];
+		zbuffercamera = new double[resX + 2][resY + 2];
 		pontosInPixels = projetarEmTela(pontosInPlanoNormalizado);
-		for (int x = 0; x < resX; x++) {
-			for (int y = 0; y < resY; y++) {
+		for (int x = 0; x < zbuffercamera.length; x++) {
+			for (int y = 0; y < zbuffercamera[0].length; y++) {
 				zbuffercamera[x][y] = Double.MAX_VALUE - 1;
 			}
 		}
-		matCor = new float[resX][resY][3];// [x do pixel][y do
+		matCor = new float[resX + 2][resY + 2][3];// [x do pixel][y do
 
 	}
 
 	public static void scanDOWN(double[] px1, double[] px2, double[] px3, int t) {
 		// reta 31
 		if (px2[0] < px1[0]) {
-			double[] aux = px1;
+			double[] aux = px2;
+			px2 = px1;
 			px1 = px2;
-			px2 = aux;
 		}
 		double deltay31 = px3[1] - px1[1];
-		double deltax31 = px3[0] - px1[0];
-		double r1 = deltax31 / deltay31;
 		double deltay32 = px3[1] - px2[1];
-		double deltax32 = px3[0] - px2[0];
-		double r2 = deltax32 / deltay32;
-		double ymax = px3[1];
-		double ymin = px1[1];
-		double xmin = px1[0];
-		double xmax = px2[0];
-		for (double y = ymin; y <= ymax; y++) {
-			xmax += r2;
-			xmin += r1;
-			for (double x = xmin; x < xmax; x++) {
-				int i = 0;
-				if (x >= 0 && x < resX-1 && y >= 0 && y < resY-1) {
-					System.out.println(resX);
-					phong(x, y, t);
-					i++;
-				}
-				System.out.println(i);
-			}
-		}
-
-		// double deltay31 = px1[1] - px3[1];
-		// double deltax31 = px1[0] - px3[0];
-		// double r1 = deltax31 / deltay31;
-		// double deltay32 = px2[1] - px3[1];
-		// double deltax32 = px2[0] - px3[0];
-		// double r2 = deltax32 / deltay32;
-		// double ymax = px3[1];
-		// double ymin = px1[1];
-		// double xmin = px3[0];
-		// double xmax = xmin;
-		// for (double y = ymax; y > ymin; y--) {
-		// for (double x = xmin; x <= xmax; x++) {
-		// int i =0;
-		// if (x > 0 && x < resX && y > 0 && y < resY) {
-		// phong(x, y, t);
-		// i++;
-		// }
-		// System.out.println(i);
-		// }
-		// xmax-=r2;
-		// xmin-=r1;
-		// }
 
 	}
 
 	private static void scanline() {
-		double deltay12, deltay23;
+		double deltay21, deltay23, deltay31;
 		double[] px1, px2, px3;
-
+		// for (int t = 0; t < 80; t++) {
 		for (int t = 0; t < triangulos.length; t++) {
 			px1 = pontosInPixels[triangulos[t][0]];
 			px2 = pontosInPixels[triangulos[t][1]];
 			px3 = pontosInPixels[triangulos[t][2]];
 
-			// verifica se é um triangulo virado para cima:
-			deltay23 = Math.abs(px2[1] - px3[1]);
+			deltay21 = px2[1] - px1[1];
+			deltay23 = px2[1] - px3[1];
+			deltay31 = px3[1] - px1[1];
 			if (Math.abs(deltay23) <= intervalo) {
-				//scanUP(px1, px2, px3, t);
-			} else {
-				deltay12 = Math.abs(px2[1] - px3[1]);
-				if (Math.abs(deltay12) <= intervalo) {// triangulo virado para
-														// baixo
-					scanDOWN(px1, px2, px3, t);
-				} else {// we have to split the triangle
-						// como os vertices do triangulo estao ordenados do
-						// maior para o menor y, em coordenadas de plano de
-						// vista, o y do ponto de intecessao é igual a px2.y
-					double x, deltax31;
-
-					double deltay31 = px3[1] - px1[1];
-
-					if (Math.abs(deltay31) < intervalo) {// linha horizontal
-						drawLine(px1, px2, px3, t);
-					} else {
-						deltax31 = px3[0] - px1[0];
-						double a = deltax31 / deltay31;
-						double deltay21 = px2[1] - px1[1];
-						x = px1[0] + a * deltay21;
-						double[] pxNew = new double[] { x, px2[1] };
-					//	scanUP(px1, px2, pxNew, t);
-						scanDOWN(px1, pxNew, px3, t);
-					}
-
+				if (isLine(px1, px2, px3)) {// pixels alinhados
+											// na horizontal
+					drawLine(px1, px2, px3, t);
+				} else {
+					scanUP(px1, px2, px3, t);
 				}
+			} else if (Math.abs(deltay21) <= intervalo) {
+				// scanDOWN(px1, px2, px3, t);
+			} else {// tem q dar split no triangulo
+				double[] px4 = new double[2];
+				px4[1] = px2[1];
+				px4[0] = px1[0] + ((px3[0] - px1[0]) / (px3[1] - px1[1]))
+						* (px2[1] - px1[1]);
+				if (isLine(px1, px2, px4)) {
+					drawLine(px1, px2, px4, t);
+				} else {
+					scanUP(px1, px2, px4, t);
+				}
+				if(isLine(px2, px4, px3)){
+					drawLine(px2, px4, px3, t);
+				}
+				// scanDOWN(px2, px4, px3, t);
 			}
 
 		}
 
 	}
 
-	public static void scanUP(double[] px1, double[] px2, double[] px3, int t) {
-		double invslope1 = (px2[0] - px1[0]) / (px2[1] - px1[1]);
-		double invslope2 = (px3[0] - px1[0]) / (px3[1] - px1[1]);
-		double curx1 = px1[0];
-		double curx2 = px1[0];
-		if (curx1 < 0)
-			curx1 = 0;
-		if (curx2 > resX)
-			curx2 = resX;
+	public static boolean isLine(double[] px1, double[] px2, double[] px3) {
+		double deltay21, deltay23, deltay31;
+		deltay21 = px2[1] - px1[1];
+		deltay23 = px2[1] - px3[1];
+		deltay31 = px3[1] - px1[1];
+double intervalo = .06;
+		return Math.abs(deltay23) <= intervalo
+				&& Math.abs(deltay21) <= intervalo
+				&& Math.abs(deltay31) <= intervalo;
 
-		for (int y = (int) px1[1]; y <= px2[1]; y++) {
-			for (int x = (int) curx1; x <= curx2; x++) {
-				if (x > 0 && x < resX && y > 0 && y < resY) {
+	}
+
+	public static void scanUP(double[] p1, double[] p2, double[] p3, int t) {
+		double deltax21, deltax31, deltay21, deltay31;
+		double[] px1 = new double[] { p1[0], p1[1] };
+		double[] px2 = new double[] { p2[0], p2[1] };
+		double[] px3 = new double[] { p3[0], p3[1] };
+		if (px2[0] > px3[0]) {
+			double[] aux = px2;
+			px2 = px3;
+			px3 = aux;
+		}
+		deltax21 = px2[0] - px1[0];
+		deltax31 = px3[0] - px1[0];
+		deltay21 = px2[1] - px1[1];
+		deltay31 = px3[1] - px1[1];
+		System.out.println(deltay31);
+		double xmin = px1[0];
+		double xmax = px1[0];
+		double r1 = deltax21 / deltay21;
+		double r2 = deltax31 / deltay31;
+		double ymin = px1[1];
+		double ymax = px2[1];
+		for (double y = ymin; y < ymax; y++) {
+			for (double x = xmin; x < xmax; x++) {
+				if (x >= 0 && x < resX && y >= 0 && y < resY) {
 					phong(x, y, t);
-					matCor[Math.round(x)][Math.round(y)] = new float[] { 0, 1,
-							1 };
 				}
 			}
-			curx1 += invslope1;
-			curx2 += invslope2;
-			if (curx1 < 0)
-				curx1 = 0;
-			if (curx2 > resX)
-				curx2 = resX;
+			xmin += r1;
+			xmax += r2;
+			if (xmin < px2[0])
+				xmin = px2[0];
+			if (xmax > px3[0])
+				xmax = px3[0];
 		}
+
 	}
 
 	// objetos
@@ -639,8 +613,8 @@ public class EsseFunciona implements GLEventListener {
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int w, int h) {
 		System.out.println("NEW: X" + x + " y: " + y + " w:" + w + " h:" + h);
-		resX = w;
-		resY = h;
+		resX = w - 2;
+		resY = h - 2;
 		refresh();
 	}
 
