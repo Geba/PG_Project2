@@ -159,7 +159,7 @@ public class EsseFunciona implements GLEventListener {
 		});
 		canvas.addGLEventListener(new EsseFunciona());
 		FPSAnimator animator = new FPSAnimator(canvas, 60);
-		animator.add(canvas);
+	//	animator.add(canvas);
 		animator.start();
 
 	}
