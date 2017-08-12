@@ -4,22 +4,22 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL4;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLCanvas;
+
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 
 import org.la4j.LinearAlgebra;
 import org.la4j.linear.LinearSystemSolver;
 import org.la4j.matrix.sparse.CRSMatrix;
 import org.la4j.vector.Vector;
 import org.la4j.vector.dense.BasicVector;
-
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -172,20 +172,18 @@ public class FinalClass implements GLEventListener {
 		});
 		canvas.addGLEventListener(new FinalClass());
 		FPSAnimator animator = new FPSAnimator(canvas, 60);
-		animator.add(canvas);
+	//	animator.add(canvas);
 		animator.start();
 	}
 
 	private static void printPontosTrans() {
 		for (int i = 0; i < Np; i++) {
-			System.out.println(pontosTrans[i][0] + " " + pontosTrans[i][1]
-					+ " " + pontosTrans[i][2]);
+			System.out.println(pontosTrans[i][0] + " " + pontosTrans[i][1] + " " + pontosTrans[i][2]);
 		}
 
 	}
 
-	private static double[] getNewCoordinates(double[] pl2,
-			double[][] matrizMudBase2, double[] c2) {
+	private static double[] getNewCoordinates(double[] pl2, double[][] matrizMudBase2, double[] c2) {
 		pl2 = Algb.sub(pl2, c2);
 		pl2 = Algb.multMatrizVetor(matrizMudBase2, pl2);
 		return pl2;
@@ -206,8 +204,7 @@ public class FinalClass implements GLEventListener {
 		return mudBase;
 	}
 
-	public static double[][] getNewCoordinates(double[][] pontos,
-			double[][] mudBase, double[] camera) {
+	public static double[][] getNewCoordinates(double[][] pontos, double[][] mudBase, double[] camera) {
 		double[][] retorno = new double[pontos.length][3];
 		for (int i = 0; i < pontos.length; i++) {
 			double[] ponto = pontos[i];
@@ -321,11 +318,7 @@ public class FinalClass implements GLEventListener {
 	public void scan(int a1, int a2, double[] px1, double[] px2, double[] px3) {
 		// a1 -e o indice do px1, a2 o do px2, px1 e px2 fazem parte do
 		// matPointToPixel. px3 é dado, pois foi calculado pelo split
-		
-		
-		
-		
-				
+
 	}
 
 	@Override
@@ -350,15 +343,12 @@ public class FinalClass implements GLEventListener {
 
 	}
 
-	public static double[] coefsBaricentricos(double[] P, double[] P1,
-			double[] P2, double[] P3) {
+	public static double[] coefsBaricentricos(double[] P, double[] P1, double[] P2, double[] P3) {
 		double x = P[0], y = P[1], x1 = P1[0], y1 = P1[1], x2 = P2[0], y2 = P2[1], x3 = P[0], y3 = P[1];
-		CRSMatrix a = new CRSMatrix(new double[][] { { x1, x2, x3 },
-				{ y1, y2, y3 }, { 1.0, 1.0, 1.0 } });
+		CRSMatrix a = new CRSMatrix(new double[][] { { x1, x2, x3 }, { y1, y2, y3 }, { 1.0, 1.0, 1.0 } });
 		double[] b2 = { x, y, 1.0 };
 		BasicVector b = new BasicVector(b2);
-		LinearSystemSolver solver = a
-				.withSolver(LinearAlgebra.FORWARD_BACK_SUBSTITUTION);
+		LinearSystemSolver solver = a.withSolver(LinearAlgebra.FORWARD_BACK_SUBSTITUTION);
 		Vector resp = solver.solve(b, LinearAlgebra.SPARSE_FACTORY);
 		return new double[] { resp.get(0), resp.get(1), resp.get(2) };
 
@@ -388,21 +378,18 @@ public class FinalClass implements GLEventListener {
 		if (pontosNatela[0][0] - pontosNatela[1][0] == 0) {
 			inclinacaoP1P2 = 0;
 		} else {
-			inclinacaoP1P2 = (pontosNatela[0][1] - pontosNatela[1][1])
-					/ (pontosNatela[0][0] - pontosNatela[1][0]);
+			inclinacaoP1P2 = (pontosNatela[0][1] - pontosNatela[1][1]) / (pontosNatela[0][0] - pontosNatela[1][0]);
 		}
 
 		if (pontosNatela[0][0] - pontosNatela[2][0] == 0) {
 			inclinacaoP1P3 = 0;
 		} else {
-			inclinacaoP1P3 = (pontosNatela[0][1] - pontosNatela[2][1])
-					/ (pontosNatela[0][0] - pontosNatela[2][0]);
+			inclinacaoP1P3 = (pontosNatela[0][1] - pontosNatela[2][1]) / (pontosNatela[0][0] - pontosNatela[2][0]);
 		}
 		if (pontosNatela[1][0] - pontosNatela[2][0] == 0) {
 			inclinacaoP2P3 = 0;
 		} else {
-			inclinacaoP2P3 = (pontosNatela[1][1] - pontosNatela[2][1])
-					/ (pontosNatela[1][0] - pontosNatela[2][0]);
+			inclinacaoP2P3 = (pontosNatela[1][1] - pontosNatela[2][1]) / (pontosNatela[1][0] - pontosNatela[2][0]);
 		}
 		double posicaoInicio = pontosNatela[0][0];
 		double posicaoAtualY = pontosNatela[0][1];
@@ -421,15 +408,13 @@ public class FinalClass implements GLEventListener {
 				for (double x = posicaoInicio; x <= posicaoFim; x += incremento) {
 					// encontrar as coordenadas baricentricas para o triangulo
 					if (x >= 0 && x < resX - 1) {
-						double[] baricentricas = coefsBaricentricos(
-								new double[] { x, y }, pontosNatela[0],
+						double[] baricentricas = coefsBaricentricos(new double[] { x, y }, pontosNatela[0],
 								pontosNatela[1], pontosNatela[2]);
 						// atualizar a matriz z-buffer, caso seja necassario
 						double zaprox = 0;
 						for (int i = 0; i < 3; i++) {
 							// System.out.println(baricentricas[0]);
-							zaprox += pontos[indicepontos[i]][2]
-									+ baricentricas[i];
+							zaprox += pontos[indicepontos[i]][2] + baricentricas[i];
 						}
 
 						if (zaprox < zbuffercamera[(int) x][(int) y]) {
@@ -455,15 +440,13 @@ public class FinalClass implements GLEventListener {
 				for (double x = posicaoInicio; x <= posicaoFim; x += incremento) {
 					// encontrar as coordenadas baricentricas para o triangulo
 					if (x >= 0 && x < resX - 1) {
-						double[] baricentricas = coefsBaricentricos(
-								new double[] { x, y }, pontosNatela[0],
+						double[] baricentricas = coefsBaricentricos(new double[] { x, y }, pontosNatela[0],
 								pontosNatela[1], pontosNatela[2]);
 						// atualizar a matriz z-buffer, caso seja necassario
 						double zaprox = 0;
 						for (int i = 0; i < 3; i++) {
 							// System.out.println(baricentricas[0]);
-							zaprox += pontos[indicepontos[i]][2]
-									+ baricentricas[i];
+							zaprox += pontos[indicepontos[i]][2] + baricentricas[i];
 						}
 
 						if (zaprox < zbuffercamera[(int) x][(int) y]) {

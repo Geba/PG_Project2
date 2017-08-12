@@ -1,16 +1,16 @@
 
-Java (TM) Binding for the OpenGL (r) API, version 2.0
+Java (TM) Binding for the OpenGL (r) API, version 2.3
 -----------------------------------------------------------------------------
 
 This software is licensed as specified in the LICENSE.txt file.  
 You must use this software in accordance with the terms 
 under which the code is licensed.
 
-This is build version 2.0-b930-20130313, based on:
-              branch  master
-              commit  58f6f4e5665ae2c72ec6bbd86ad5a36bef00de07
+This is build version 2.3.2, based on:
+              branch  origin/master
+              commit  e794fc40ba723f2fca4ac892e873975fb393e007
 
-Instructions for unzipping Java Binding for the OpenGL API, version 2.0
+Instructions for unzipping Java Binding for the OpenGL API, version 2.3
 ----------------------------------------------------------------------------------
 
 After downloading and unzipping the zip file containing the 
